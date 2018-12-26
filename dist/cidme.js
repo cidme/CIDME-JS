@@ -12,7 +12,7 @@
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
- * @version 0.2.0
+ * @version 0.2.1
  */
 class Cidme {
     /**
@@ -108,10 +108,6 @@ class Cidme {
                             "type": "string",
                             "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/EntityContext\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
                         },
-                        "@reverse": {
-                            "type": "string",
-                            "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/(Entity|EntityContext)\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
-                        },
                         "@type": {
                             "type": "string",
                             "enum": ["EntityContext"]
@@ -155,10 +151,6 @@ class Cidme {
                             "type": "string",
                             "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/EntityContextLinkGroup\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
                         },
-                        "@reverse": {
-                            "type": "string",
-                            "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/EntityContext\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
-                        },
                         "@type": {
                             "type": "string",
                             "enum": ["EntityContextLinkGroup"]
@@ -187,10 +179,6 @@ class Cidme {
                             "type": "string",
                             "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/EntityContextDataGroup\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
                         },
-                        "@reverse": {
-                            "type": "string",
-                            "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/EntityContext\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
-                        },
                         "@type": {
                             "type": "string",
                             "enum": ["EntityContextDataGroup"]
@@ -218,10 +206,6 @@ class Cidme {
                         "@id": {
                             "type": "string",
                             "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/MetadataGroup\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
-                        },
-                        "@reverse": {
-                            "type": "string",
-                            "pattern": "^[cC][iI][dD][mM][eE]\\:\\/\\/[a-zA-Z0-9\\-]+\\/(Entity|EntityContext|EntityContextLinkGroup|EntityContextDataGroup|MetadataGroup)\\/[a-f0-9]{8}\\-[a-f0-9]{4}\\-4[a-f0-9]{3}\\-(8|9|a|b)[a-f0-9]{3}\\-[a-f0-9]{12}$"
                         },
                         "@type": {
                             "type": "string",
@@ -361,15 +345,6 @@ class Cidme {
             this.debugOutput('- VALID as CIDME Schema!');
         }
 
-        // Validate all @reverse properties within a resource to ensure they point correctly to their parents @id property.
-        // Also ensure that each @reverse property does not match its own @id property.
-        if (!this.validateReverseId(cidmeResource, parentId)) {
-            this.debugOutput('- INVALID @reverse/@id!');
-            return false;
-        } else {
-            this.debugOutput('- VALID @reverse/@id!');
-        }
-
         // Validate metadata, if applicable
         if (cidmeResource.hasOwnProperty('metadata')) {
             for (let i=0; i<cidmeResource['metadata'].length; i++) {
@@ -413,84 +388,6 @@ class Cidme {
                 }
             }
         }
-
-        return true;
-    }
-
-
-    /**
-     * Validate the @reverse property of a given resource to ensure it points correctly to the parents @id property.
-     * Ensure that each @reverse property does not match its own @id property.
-     * This is a recursive function!  All metadata, entity context links, entity context data, and entity subcontexts are checked too!
-     * @param {object} cidmeResource The cidme resource to validate.
-     * @param {string} [parentId] The parent cidme resource ID, if applicable.
-     * @returns {boolean}
-     */
-    validateReverseId(cidmeResource, parentId) {
-        // Test to see if the @reverse and @id properties match.
-        if (
-            cidmeResource.hasOwnProperty('@reverse')
-            && cidmeResource['@reverse'] == ['@id']
-        ) {
-            this.debugOutput('  -- REVERSE MATCHES ID!');
-            return false;
-        }
-
-        // Test to see if the @reverse property matches the given parentId.
-        if (!parentId) {} else {
-            if (!cidmeResource.hasOwnProperty('@reverse')) {
-                //this.debugOutput('  -- NO REVERSE BUT PARENT ID SPECIFIED!');
-                //return false;
-            } else {
-                //this.debugOutput('  -- ' + cidmeResource['@reverse'] + ' = ' + parentId);
-                if (cidmeResource['@reverse'] !== parentId) {
-                    this.debugOutput('  -- REVERSE DOES NOT MATCH PARENT ID!');
-                    return false;
-                }
-            }
-        }
-
-        /*
-        // Validate metadata, if applicable
-        if (cidmeResource.hasOwnProperty('metadata')) {
-            for (let i=0; i<cidmeResource['metadata'].length; i++) {
-                if (!this.validateReverseId(cidmeResource['metadata'][i], cidmeResource['@id'])) {
-                    this.debugOutput('  -- METADATA VALIDATION ERROR!');
-                    return false;
-                }
-            }
-        }
-
-        // Validate entity context link groups, if applicable
-        if (cidmeResource.hasOwnProperty('entityContextLinks')) {
-            for (let i=0; i<cidmeResource['entityContextLinks'].length; i++) {
-                if (!this.validateReverseId(cidmeResource['entityContextLinks'][i], cidmeResource['@id'])) {
-                    this.debugOutput('  -- ENTITY CONTEXT LINK GROUPS VALIDATION ERROR!');
-                    return false;
-                }
-            }
-        }
-
-        // Validate entity context data groups, if applicable
-        if (cidmeResource.hasOwnProperty('entityContextData')) {
-            for (let i=0; i<cidmeResource['entityContextData'].length; i++) {
-                if (!this.validateReverseId(cidmeResource['entityContextData'][i], cidmeResource['@id'])) {
-                    this.debugOutput('  -- ENTITY CONTEXT DATA GROUPS VALIDATION ERROR!');
-                    return false;
-                }
-            }
-        }
-
-        // Validate entity subcontexts, if applicable
-        if (cidmeResource.hasOwnProperty('entityContexts')) {
-            for (let i=0; i<cidmeResource['entityContexts'].length; i++) {
-                if (!this.validateReverseId(cidmeResource['entityContexts'][i], cidmeResource['@id'])) {
-                    this.debugOutput('  -- ENTITY CONTEXT VALIDATION ERROR!');
-                    return false;
-                }
-            }
-        }
-        */
 
         return true;
     }
@@ -592,7 +489,7 @@ class Cidme {
 
     /**
      * Add a MetadataGroup resource to an existing resource with a type of CreatedMetadata.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
      * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
@@ -635,7 +532,7 @@ class Cidme {
 
     /**
      * Add a MetadataGroup resource to an existing resource with a type of LastModifiedMetadata.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
      * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
@@ -678,7 +575,7 @@ class Cidme {
 
     /**
      * Returns a CIDME entity context resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
      * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
@@ -710,8 +607,7 @@ class Cidme {
         let entityContext = {
             "@context": this.jsonLdContext,
             "@type": "EntityContext",
-            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContext', idUuid),
-            "@reverse": parentId
+            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContext', idUuid)
         }
 
         // Add metadata?
@@ -738,7 +634,7 @@ class Cidme {
 
     /**
      * Returns a CIDME metadata resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
      * @param {string} [options.data] - RDF data in JSON-LD format to be added to the metadata data[] array.
@@ -766,8 +662,7 @@ class Cidme {
         let metadata = {
             "@context": this.jsonLdContext,
             "@type": "MetadataGroup",
-            "@id": this.getCidmeUri(parentIdObject['datastore'], 'MetadataGroup', idUuid),
-            "@reverse": parentId
+            "@id": this.getCidmeUri(parentIdObject['datastore'], 'MetadataGroup', idUuid)
         }
 
         if (!options || !options.data) {} else {
@@ -798,7 +693,7 @@ class Cidme {
 
     /**
      * Returns a CIDME entity context link group resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
      * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
@@ -830,8 +725,7 @@ class Cidme {
         let entityContextLink = {
             "@context": this.jsonLdContext,
             "@type": "EntityContextLinkGroup",
-            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid),
-            "@reverse": parentId
+            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid)
         }
         
         // Add metadata?
@@ -859,7 +753,7 @@ class Cidme {
 
     /**
      * Returns a CIDME entity context data group resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the @reverse value and the datastore ID from this is also used for the @id datastore value.
+     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
      * @param {object[]} [options] - An optional object containing optional values.
      * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
      * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
@@ -891,8 +785,7 @@ class Cidme {
         let entityContextData = {
             "@context": this.jsonLdContext,
             "@type": "EntityContextDataGroup",
-            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid),
-            "@reverse": parentId
+            "@id": this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid)
         }
 
         // Add metadata?
