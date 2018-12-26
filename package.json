@@ -1,9 +1,9 @@
 {
   "name": "cidme",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Contextual IDentity Management Engine (CIDME)",
   "scripts": {
-    "test": "cd test;jest cidme.test.js"
+    "test": "cd test;jest cidme.test.js;standard;cd ../dist;standard"
   },
   "author": {
     "name": "Joe Thielen",
