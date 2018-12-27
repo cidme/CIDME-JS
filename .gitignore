@@ -1,8 +1,10 @@
 /OLD
+/src/OLD
 /dist/OLD
 /test/OLD
 /node_modules
 package-lock.json
 *.swp
+/src/*.swp
 /dist/*.swp
 /test/*.swp

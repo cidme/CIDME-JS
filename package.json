@@ -1,9 +1,11 @@
 {
   "name": "cidme",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Contextual IDentity Management Engine (CIDME)",
   "scripts": {
-    "test": "cd test;jest cidme.test.js;standard;cd ../dist;standard"
+    "test": "cd test;jest cidme.test.js",
+    "build": "tsc --alwaysStrict --strict --noImplicitAny --noImplicitThis --noImplicitReturns --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --strictNullChecks --strictFunctionTypes --strictBindCallApply --strictPropertyInitialization --outDir dist src/*.ts",
+    "buildsimple": "tsc --outDir dist src/*.ts"
   },
   "author": {
     "name": "Joe Thielen",
@@ -18,7 +20,7 @@
   "devDependencies": {
     "jest": "^23.6.0",
     "uuidjs": "^4.0.3",
-    "standard": "^12.0.1"
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "ajv": "^6.0.0"
