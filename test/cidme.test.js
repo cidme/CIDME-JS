@@ -1225,7 +1225,7 @@ test('Validate externally-created basic Entity w/no metadata', () => {
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34'
   }
@@ -1240,17 +1240,17 @@ test('Validate externally-created basic Entity', () => {
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1263,12 +1263,12 @@ test('Validate externally-created basic Entity', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1295,17 +1295,17 @@ test('Validate externally-created basic Entity w/creatorId', () => {
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1318,12 +1318,12 @@ test('Validate externally-created basic Entity w/creatorId', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1349,7 +1349,7 @@ test('Validate externally-created basic Entity - BAD: with extra data', () => {
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'extra': 'Extra stuff here.'
@@ -1366,7 +1366,7 @@ test('Validate externally-created basic EntityContext w/no metadata', () => {
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'EntityContext',
     '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
   }
@@ -1379,17 +1379,17 @@ test('Validate externally-created basic EntityContext', () => {
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'EntityContext',
     '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1402,12 +1402,12 @@ test('Validate externally-created basic EntityContext', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1431,17 +1431,17 @@ test('Validate externally-created basic EntityContext w/creatorId', () => {
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'EntityContext',
     '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1454,12 +1454,12 @@ test('Validate externally-created basic EntityContext w/creatorId', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1482,7 +1482,7 @@ test('Validate externally-created basic EntityContext - BAD: with extra data', (
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'EntityContext',
     '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
     'extra': 'Extra stuff here.'
@@ -1499,12 +1499,12 @@ test('Validate externally-created Entity/EntityContext w/no metadata', () => {
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
       }
@@ -1520,17 +1520,17 @@ test('Validate externally-created Entity/EntityContext', () => {
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1543,12 +1543,12 @@ test('Validate externally-created Entity/EntityContext', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1563,17 +1563,17 @@ test('Validate externally-created Entity/EntityContext', () => {
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -1586,12 +1586,12 @@ test('Validate externally-created Entity/EntityContext', () => {
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -1618,17 +1618,17 @@ test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1641,12 +1641,12 @@ test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1661,17 +1661,17 @@ test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -1684,12 +1684,12 @@ test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -1734,12 +1734,12 @@ test('Validate externally-created basic EntityContextLinkGroup', () => {
     '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1752,12 +1752,12 @@ test('Validate externally-created basic EntityContextLinkGroup', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1786,12 +1786,12 @@ test('Validate externally-created basic EntityContextLinkGroup w/creatorId', () 
     '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1804,12 +1804,12 @@ test('Validate externally-created basic EntityContextLinkGroup w/creatorId', () 
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1864,12 +1864,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'entityContextLinks': [
@@ -1893,17 +1893,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -1916,12 +1916,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -1936,17 +1936,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -1959,12 +1959,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -1984,12 +1984,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
             '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2002,12 +2002,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2037,17 +2037,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2060,12 +2060,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2080,17 +2080,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -2103,12 +2103,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -2128,12 +2128,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
             '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2146,12 +2146,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2199,12 +2199,12 @@ test('Validate externally-created basic EntityContextDataGroup', () => {
     '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2217,12 +2217,12 @@ test('Validate externally-created basic EntityContextDataGroup', () => {
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2251,12 +2251,12 @@ test('Validate externally-created basic EntityContextDataGroup w/creatorId', () 
     '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2269,12 +2269,12 @@ test('Validate externally-created basic EntityContextDataGroup w/creatorId', () 
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2333,12 +2333,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'entityContextData': [
@@ -2362,17 +2362,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2385,12 +2385,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2405,17 +2405,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -2428,12 +2428,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -2453,12 +2453,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
             '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2471,12 +2471,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2506,17 +2506,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2529,12 +2529,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2549,17 +2549,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -2572,12 +2572,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -2597,12 +2597,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
             '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2615,12 +2615,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2650,12 +2650,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'entityContextLinks': [
@@ -2687,17 +2687,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
   let options = []
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2710,12 +2710,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2730,17 +2730,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -2753,12 +2753,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -2778,12 +2778,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2796,12 +2796,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2823,12 +2823,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2841,12 +2841,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -2877,17 +2877,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
   options.creatorId = creatorId
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'CreatedMetadata'
           },
           {
@@ -2900,12 +2900,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
         ]
       },
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
         'data': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'LastModifiedMetadata'
           },
           {
@@ -2920,17 +2920,17 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'CreatedMetadata'
               },
               {
@@ -2943,12 +2943,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             ]
           },
           {
-            '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
             'data': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'LastModifiedMetadata'
               },
               {
@@ -2968,12 +2968,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -2986,12 +2986,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -3013,12 +3013,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
             '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
             'metadata': [
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'CreatedMetadata'
                   },
                   {
@@ -3031,12 +3031,12 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
                 ]
               },
               {
-                '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
                 'data': [
                   {
-                    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
                     '@type': 'LastModifiedMetadata'
                   },
                   {
@@ -3134,7 +3134,7 @@ test('Validate externally-created Entity/MetadataGroup', () => {
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
@@ -3155,7 +3155,7 @@ test('Validate externally-created Entity/EntityContext/MetadataGroup', () => {
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
@@ -3167,7 +3167,7 @@ test('Validate externally-created Entity/EntityContext/MetadataGroup', () => {
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
@@ -3192,7 +3192,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextData/Metadat
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
@@ -3204,7 +3204,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextData/Metadat
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
@@ -3246,7 +3246,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/Metadat
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
@@ -3258,7 +3258,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/Metadat
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [
@@ -3300,7 +3300,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityC
   options.createMetadata = false
 
   let resource = {
-    '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
     '@type': 'Entity',
     '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
     'metadata': [
@@ -3312,7 +3312,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityC
     ],
     'entityContexts': [
       {
-        '@context': 'http://cidme.net/vocab/0.2.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [

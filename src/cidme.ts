@@ -1,5 +1,5 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.2.0.
+ * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
@@ -41,13 +41,12 @@ interface CidmeResource {
   data?: any
 }
 
-
 /**
- * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.2.0.
+ * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
- * @version 0.3.0
+ * @version 0.4.0
  */
 class Cidme {
 
@@ -87,7 +86,7 @@ class Cidme {
       throw new Error('Missing required arguments.')
     }
 
-    this['cidmeVersion'] = '0.2.0'
+    this['cidmeVersion'] = '0.3.0'
 
     this['jsonSchemaValidator'] = jsonSchemaValidator
     this['uuidGenerator'] = uuidGenerator
@@ -107,7 +106,7 @@ class Cidme {
          * @member {string}
          */
     this['schemaCidme'] = {
-      'id': 'http://cidme.net/vocab/' + this['cidmeVersion'] + 'cidme.jsonschema.json',
+      'id': 'http://cidme.net/vocab/core/' + this['cidmeVersion'] + '/cidme.schema.json',
       'title': 'CIDME Entity',
       'type': 'object',
       'definitions': {
@@ -341,7 +340,7 @@ class Cidme {
          * URL of JSON-LD vocab for CIDME resources.
          * @member {string}
          */
-    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/' + this['cidmeVersion']
+    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeVersion']
 
     /**
          * URL of JSON-LD context for CIDME resources.
