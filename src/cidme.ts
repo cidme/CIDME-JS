@@ -1,7 +1,7 @@
 /**
  * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018
+ * @copyright Joe Thielen 2018-2019
  * @license MIT
  */
 

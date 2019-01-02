@@ -1,3 +1,10 @@
+/**
+ * @file Jest JS unit tests for CIDME core.
+ * @author Joe Thielen <joe@joethielen.com>
+ * @copyright Joe Thielen 2018-2019
+ * @license MIT
+ */
+
 'use strict'
 
 // These are for by Jest, but throw errors in StandardJS
