@@ -15,7 +15,7 @@ interface Options {
   datastore?: string,
   createMetadata?: boolean,
   creatorId?: string,
-  data?: any
+  data?: object
 }
 
 /**
@@ -38,7 +38,7 @@ interface CidmeResource {
   entityContextData?: any,
   entityContextLinks?: any,
   metadata?: any,
-  data?: any
+  data?: object
 }
 
 /**
@@ -113,6 +113,9 @@ class Cidme {
         '@context': {
           'type': 'string',
           'format': 'uri'
+        },
+        '@dataContext': {
+          'type': ['string', 'object']
         },
         'Entity': {
           'title': 'CIDME Entity Resource',
@@ -210,7 +213,10 @@ class Cidme {
               }
             },
             'data': {
-              'type': 'array'
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/Data'
+              }
             }
           },
           'required': ['@context', '@id', '@type'],
@@ -238,7 +244,10 @@ class Cidme {
               }
             },
             'data': {
-              'type': 'array'
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/Data'
+              }
             }
           },
           'required': ['@context', '@id', '@type'],
@@ -266,11 +275,25 @@ class Cidme {
               }
             },
             'data': {
-              'type': 'array'
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/Data'
+              }
             }
           },
           'required': ['@context', '@id', '@type'],
           'additionalProperties': false
+        },
+        'Data': {
+          'title': 'CIDME RDF Data Resource',
+          'type': 'object',
+          'properties': {
+            '@context': {
+              '$ref': '#/definitions/@dataContext'
+            }
+          },
+          'required': ['@context'],
+          'additionalProperties': true
         }
       },
       'if': {
@@ -707,6 +730,10 @@ class Cidme {
 
     if (!options || !options['data']) {} else {
       metadata['data'] = options['data']
+
+      if (!this.validate(metadata)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
     }
 
     // Add metadata?
@@ -767,6 +794,14 @@ class Cidme {
       '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid)
     }
 
+    if (!options || !options['data']) {} else {
+      entityContextLink['data'] = options['data']
+
+      if (!this.validate(entityContextLink)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
+    }
+
     // Add metadata?
     let createMetadata:boolean = true
     if (!options) {} else {
@@ -823,6 +858,14 @@ class Cidme {
       '@context': this['jsonLdContext'],
       '@type': 'EntityContextDataGroup',
       '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid)
+    }
+
+    if (!options || !options['data']) {} else {
+      entityContextData['data'] = options['data']
+
+      if (!this.validate(entityContextData)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
     }
 
     // Add metadata?

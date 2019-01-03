@@ -1,7 +1,7 @@
 /**
  * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018
+ * @copyright Joe Thielen 2018-2019
  * @license MIT
  */
 'use strict';
@@ -52,6 +52,9 @@ var Cidme = /** @class */ (function () {
                 '@context': {
                     'type': 'string',
                     'format': 'uri'
+                },
+                '@dataContext': {
+                    'type': ['string', 'object']
                 },
                 'Entity': {
                     'title': 'CIDME Entity Resource',
@@ -149,7 +152,10 @@ var Cidme = /** @class */ (function () {
                             }
                         },
                         'data': {
-                            'type': 'array'
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/Data'
+                            }
                         }
                     },
                     'required': ['@context', '@id', '@type'],
@@ -177,7 +183,10 @@ var Cidme = /** @class */ (function () {
                             }
                         },
                         'data': {
-                            'type': 'array'
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/Data'
+                            }
                         }
                     },
                     'required': ['@context', '@id', '@type'],
@@ -205,11 +214,25 @@ var Cidme = /** @class */ (function () {
                             }
                         },
                         'data': {
-                            'type': 'array'
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/Data'
+                            }
                         }
                     },
                     'required': ['@context', '@id', '@type'],
                     'additionalProperties': false
+                },
+                'Data': {
+                    'title': 'CIDME RDF Data Resource',
+                    'type': 'object',
+                    'properties': {
+                        '@context': {
+                            '$ref': '#/definitions/@dataContext'
+                        }
+                    },
+                    'required': ['@context'],
+                    'additionalProperties': true
                 }
             },
             'if': {
@@ -627,6 +650,9 @@ var Cidme = /** @class */ (function () {
         if (!options || !options['data']) { }
         else {
             metadata['data'] = options['data'];
+            if (!this.validate(metadata)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
         }
         // Add metadata?
         var createMetadata = true;
@@ -685,6 +711,13 @@ var Cidme = /** @class */ (function () {
             '@type': 'EntityContextLinkGroup',
             '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid)
         };
+        if (!options || !options['data']) { }
+        else {
+            entityContextLink['data'] = options['data'];
+            if (!this.validate(entityContextLink)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
+        }
         // Add metadata?
         var createMetadata = true;
         if (!options) { }
@@ -742,6 +775,13 @@ var Cidme = /** @class */ (function () {
             '@type': 'EntityContextDataGroup',
             '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid)
         };
+        if (!options || !options['data']) { }
+        else {
+            entityContextData['data'] = options['data'];
+            if (!this.validate(entityContextData)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
+        }
         // Add metadata?
         var createMetadata = true;
         if (!options) { }
