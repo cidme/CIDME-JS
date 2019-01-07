@@ -10,7 +10,7 @@
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
- * @version 0.4.1
+ * @version 0.4.2
  */
 var Cidme = /** @class */ (function () {
     /**
@@ -921,7 +921,7 @@ var Cidme = /** @class */ (function () {
             this.parseCidmeUri(entityContextLinkGroup['@id'])['resourceType'] !== 'EntityContextLinkGroup') {
             throw new Error('ERROR:  One or more of the arguments are missing and/or invalid.');
         }
-        if (!cidmeResource.hasOwnProperty('entityContextLinkGroups')) {
+        if (!cidmeResource.hasOwnProperty('entityContextLinks')) {
             cidmeResource['entityContextLinks'] = [];
         }
         cidmeResource['entityContextLinks'].push(entityContextLinkGroup);
@@ -944,7 +944,7 @@ var Cidme = /** @class */ (function () {
             this.parseCidmeUri(entityContextDataGroup['@id'])['resourceType'] !== 'EntityContextDataGroup') {
             throw new Error('ERROR:  One or more of the arguments are missing and/or invalid.');
         }
-        if (!cidmeResource.hasOwnProperty('entityContextDataGroups')) {
+        if (!cidmeResource.hasOwnProperty('entityContextData')) {
             cidmeResource['entityContextData'] = [];
         }
         cidmeResource['entityContextData'].push(entityContextDataGroup);

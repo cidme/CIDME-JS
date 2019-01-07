@@ -46,7 +46,7 @@ interface CidmeResource {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
- * @version 0.4.1
+ * @version 0.4.2
  */
 class Cidme {
 
@@ -1025,7 +1025,7 @@ class Cidme {
       throw new Error('ERROR:  One or more of the arguments are missing and/or invalid.')
     }
 
-    if (!cidmeResource.hasOwnProperty('entityContextLinkGroups')) {
+    if (!cidmeResource.hasOwnProperty('entityContextLinks')) {
       cidmeResource['entityContextLinks'] = []
     }
 
@@ -1054,7 +1054,7 @@ class Cidme {
       throw new Error('ERROR:  One or more of the arguments are missing and/or invalid.')
     }
 
-    if (!cidmeResource.hasOwnProperty('entityContextDataGroups')) {
+    if (!cidmeResource.hasOwnProperty('entityContextData')) {
       cidmeResource['entityContextData'] = []
     }
 
