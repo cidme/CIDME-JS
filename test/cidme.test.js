@@ -1171,6 +1171,28 @@ test('Test addEntityContextLinkGroupToResource to EntityContext resource', () =>
   expect(cidme.validate(resource)).toBe(true)
   expect(validateEntityResource(resource, options)).toBe(true)
   expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+  expect(typeof resource.entityContexts[0].entityContextLinks).toBe('object')
+  expect(resource.entityContexts[0].entityContextLinks.length).toBe(1)
+  expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
+})
+
+test('Test multiple addEntityContextLinkGroupToResource adds to EntityContext resource', () => {
+  let options = []
+
+  let resource = cidme.createEntityResource()
+  let entityContextResource = cidme.createEntityContextResource(resource['@id'])
+  let entityContextLinkGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
+  let entityContextLinkGroupResource2 = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
+
+  resource = cidme.addEntityContextToResource(resource, entityContextResource)
+  resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource.entityContexts[0], entityContextLinkGroupResource)
+  resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource.entityContexts[0], entityContextLinkGroupResource2)
+
+  expect(cidme.validate(resource)).toBe(true)
+  expect(validateEntityResource(resource, options)).toBe(true)
+  expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+  expect(typeof resource.entityContexts[0].entityContextLinks).toBe('object')
+  expect(resource.entityContexts[0].entityContextLinks.length).toBe(2)
   expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
 })
 
@@ -1286,7 +1308,30 @@ test('Test addEntityContextDataGroupToResource to EntityContext resource', () =>
   expect(cidme.validate(resource)).toBe(true)
   expect(validateEntityResource(resource, options)).toBe(true)
   expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+  expect(typeof resource.entityContexts[0].entityContextData).toBe('object')
+  expect(resource.entityContexts[0].entityContextData.length).toBe(1)
   expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
+})
+
+test('Test multiple addEntityContextDataGroupToResource adds to EntityContext resource', () => {
+  let options = []
+
+  let resource = cidme.createEntityResource()
+  let entityContextResource = cidme.createEntityContextResource(resource['@id'])
+  let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
+  let entityContextDataGroupResource2 = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
+
+  resource = cidme.addEntityContextToResource(resource, entityContextResource)
+  resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource)
+  resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource2)
+
+  expect(cidme.validate(resource)).toBe(true)
+  expect(validateEntityResource(resource, options)).toBe(true)
+  expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+  expect(typeof resource.entityContexts[0].entityContextData).toBe('object')
+  expect(resource.entityContexts[0].entityContextData.length).toBe(2)
+  expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
+  expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[1], options)).toBe(true)
 })
 
 test('Test adding EntityContextDataGroup to EntityContext via addResourceToParent', () => {
