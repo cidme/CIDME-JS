@@ -10,7 +10,7 @@
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
- * @version 0.4.2
+ * @version 0.4.3
  */
 var Cidme = /** @class */ (function () {
     /**
@@ -950,6 +950,69 @@ var Cidme = /** @class */ (function () {
         cidmeResource['entityContextData'].push(entityContextDataGroup);
         if (!this.validate(cidmeResource)) {
             throw new Error('ERROR:  An error occured while validating the new resource.');
+        }
+        return cidmeResource;
+    };
+    /*
+       * Deletes a CIDME resource from a CIDME resource.
+       * @param {string} resourceId - The @id of the resource to delete.
+       * @param {object} cidmeResource - CIDME resource to add to.
+       * @returns {(object|null)}
+       */
+    Cidme.prototype.deleteResource = function (resourceId, cidmeResource) {
+        if (!resourceId || !cidmeResource) {
+            throw new Error('ERROR:  Missing or invalid argument.');
+        }
+        if (cidmeResource['@id'] === resourceId) {
+            return null;
+        }
+        if (cidmeResource.hasOwnProperty('metadata')) {
+            for (var i = 0; i < cidmeResource['metadata'].length; i++) {
+                cidmeResource['metadata'][i] = this.deleteResource(resourceId, cidmeResource['metadata'][i]);
+                if (cidmeResource['metadata'][i] === null) {
+                    cidmeResource['metadata'].splice([i], 1);
+                    i++;
+                }
+            }
+            if (cidmeResource['metadata'].length < 1) {
+                delete cidmeResource['metadata'];
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContexts')) {
+            for (var i = 0; i < cidmeResource['entityContexts'].length; i++) {
+                cidmeResource['entityContexts'][i] = this.deleteResource(resourceId, cidmeResource['entityContexts'][i]);
+                if (cidmeResource['entityContexts'][i] === null) {
+                    cidmeResource['entityContexts'].splice([i], 1);
+                    i++;
+                }
+            }
+            if (cidmeResource['entityContexts'].length < 1) {
+                delete cidmeResource['entityContexts'];
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContextData')) {
+            for (var i = 0; i < cidmeResource['entityContextData'].length; i++) {
+                cidmeResource['entityContextData'][i] = this.deleteResource(resourceId, cidmeResource['entityContextData'][i]);
+                if (cidmeResource['entityContextData'][i] === null) {
+                    cidmeResource['entityContextData'].splice([i], 1);
+                    i++;
+                }
+            }
+            if (cidmeResource['entityContextData'].length < 1) {
+                delete cidmeResource['entityContextData'];
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+            for (var i = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+                cidmeResource['entityContextLinks'][i] = this.deleteResource(resourceId, cidmeResource['entityContextLinks'][i]);
+                if (cidmeResource['entityContextLinks'][i] === null) {
+                    cidmeResource['entityContextLinks'].splice([i], 1);
+                    i++;
+                }
+            }
+            if (cidmeResource['entityContextLinks'].length < 1) {
+                delete cidmeResource['entityContextLinks'];
+            }
         }
         return cidmeResource;
     };
