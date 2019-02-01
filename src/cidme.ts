@@ -1,5 +1,5 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * @file Implements CIDME specification core functionality.  Currently supports CIDME core specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2019
  * @license MIT
@@ -42,7 +42,7 @@ interface CidmeResource {
 }
 
 /**
- * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * Implements CIDME specification core functionality.  Currently supports CIDME core specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018
  * @license MIT
@@ -50,7 +50,7 @@ interface CidmeResource {
  */
 class Cidme {
 
-  cidmeVersion:string
+  cidmeCoreVersion:string
 
   jsonSchemaValidator:any
   uuidGenerator:any
@@ -86,7 +86,7 @@ class Cidme {
       throw new Error('Missing required arguments.')
     }
 
-    this['cidmeVersion'] = '0.3.0'
+    this['cidmeCoreVersion'] = '0.3.0'
 
     this['jsonSchemaValidator'] = jsonSchemaValidator
     this['uuidGenerator'] = uuidGenerator
@@ -106,7 +106,7 @@ class Cidme {
          * @member {string}
          */
     this['schemaCidme'] = {
-      'id': 'http://cidme.net/vocab/core/' + this['cidmeVersion'] + '/cidme.schema.json',
+      'id': 'http://cidme.net/vocab/core/' + this['cidmeCoreVersion'] + '/cidme.schema.json',
       'title': 'CIDME Entity',
       'type': 'object',
       'definitions': {
@@ -360,13 +360,13 @@ class Cidme {
     this['validateCidme'] = Object(jsonSchemaValidator.compile(this['schemaCidme']))
 
     /**
-         * URL of JSON-LD vocab for CIDME resources.
+         * URL of JSON-LD vocab for CIDME core resources.
          * @member {string}
          */
-    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeVersion']
+    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeCoreVersion']
 
     /**
-         * URL of JSON-LD context for CIDME resources.
+         * URL of JSON-LD context for CIDME core resources.
          * @member {string}
          */
     this['jsonLdContext'] = this['jsonLdVocabUrl'] + '/jsonldcontext.json'
