@@ -10,7 +10,7 @@
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.5
+ * @version 0.4.6
  */
 var Cidme = /** @class */ (function () {
     /**
@@ -1059,9 +1059,9 @@ var Cidme = /** @class */ (function () {
     /* ********************************************************************** */
     // HELPER FUNCTIONS
     /*
-       * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetadataGroup, an EntityContext, or another type of resource.
-       * @param {string} parentId - The @id of the resource to add to.
-       * @param {object} cidmeResource - CIDME resource to add to.
+       * Return a portion (or all) of a cidmeResource based on the requested resourceId.
+       * @param {string} resourceId - The @id of the resource to get.
+       * @param {object} cidmeResource - CIDME resource to search through.
        * @returns {boolean | object}
        */
     Cidme.prototype.getResourceById = function (resourceId, cidmeResource) {
@@ -1081,7 +1081,8 @@ var Cidme = /** @class */ (function () {
         catch (err) {
             throw new Error('ERROR:  Invalid passed CIDME resource ID.');
         }
-        var returnVal = false;
+        //let returnVal: CidmeResource | boolean = false;
+        var returnVal;
         if (cidmeResource['@id'] === resourceId) {
             return cidmeResource;
         }
@@ -1118,6 +1119,111 @@ var Cidme = /** @class */ (function () {
                 if (!returnVal) { }
                 else {
                     return returnVal;
+                }
+            }
+        }
+        return false;
+    };
+    /*
+       * Returns an object containing a portion (or all) of a cidmeResource based on the requested resourceId as well as an array containing the 'breadcrumb' path to find the specificed resourceId within the full resource.
+       * @param {string} resourceId - The @id of the resource to get.
+       * @param {object} cidmeResource - CIDME resource to search through.
+       * @param {object} cidmeBreadcrumbs - CIDME breadcrumbs array.
+       * @returns {object | boolean}
+       */
+    Cidme.prototype.getResourceByIdWithBreadcrumbs = function (resourceId, cidmeResource, cidmeBreadcrumbs) {
+        if (!resourceId || !cidmeResource) {
+            throw new Error('ERROR:  Missing or invalid argument.');
+        }
+        // Make sure we have a valid CIDME resource
+        if (!this.validate(cidmeResource)) {
+            throw new Error('ERROR:  Invalid passed CIDME resource.');
+        }
+        // Make sure we have a valid CIDME resource ID
+        try {
+            var resourceIdParsed = this.parseCidmeUri(resourceId);
+            /* Stop StandardJS from complaining */
+            if (resourceIdParsed) { /* */ }
+        }
+        catch (err) {
+            throw new Error('ERROR:  Invalid passed CIDME resource ID.');
+        }
+        if (cidmeResource['@id'] === resourceId) {
+            cidmeBreadcrumbs.push({
+                cidmeResourceType: 'entity',
+                cidmeResourceId: cidmeResource['@id']
+            });
+            var returnVal2 = {
+                cidmeResource: cidmeResource,
+                cidmeBreadcrumbs: cidmeBreadcrumbs
+            };
+            return returnVal2;
+        }
+        if (cidmeResource.hasOwnProperty('metadata')) {
+            for (var i = 0; i < cidmeResource['metadata'].length; i++) {
+                var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['metadata'][i], cidmeBreadcrumbs);
+                if (!returnVal) { }
+                else {
+                    cidmeBreadcrumbs.push({
+                        cidmeResourceType: 'metadata',
+                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    });
+                    var returnVal2 = {
+                        cidmeResource: returnVal['cidmeResource'],
+                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                    };
+                    return returnVal2;
+                }
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContexts')) {
+            for (var i = 0; i < cidmeResource['entityContexts'].length; i++) {
+                var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContexts'][i], cidmeBreadcrumbs);
+                if (!returnVal) { }
+                else {
+                    cidmeBreadcrumbs.push({
+                        cidmeResourceType: 'entityContexts',
+                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    });
+                    var returnVal2 = {
+                        cidmeResource: returnVal['cidmeResource'],
+                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                    };
+                    return returnVal2;
+                }
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContextData')) {
+            for (var i = 0; i < cidmeResource['entityContextData'].length; i++) {
+                var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextData'][i], cidmeBreadcrumbs);
+                if (!returnVal) { }
+                else {
+                    cidmeBreadcrumbs.push({
+                        cidmeResourceType: 'entityContextData',
+                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    });
+                    var returnVal2 = {
+                        cidmeResource: returnVal['cidmeResource'],
+                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                    };
+                    return returnVal2;
+                }
+            }
+        }
+        if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+            for (var i = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+                var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextLinks'][i], cidmeBreadcrumbs);
+                if (!returnVal) { }
+                else {
+                    cidmeBreadcrumbs.push({
+                        cidmeResourceType: 'entityContextLinks',
+                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    });
+                    var returnVal2 = {
+                        cidmeResource: returnVal['cidmeResource'],
+                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                    };
+                    return returnVal2;
                 }
             }
         }

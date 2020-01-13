@@ -41,6 +41,8 @@ interface CidmeResource {
   data?: object
 }
 
+
+
 /**
  * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
@@ -1220,7 +1222,8 @@ class Cidme {
         throw new Error('ERROR:  Invalid passed CIDME resource ID.')
       }
       
-      let returnVal: CidmeResource | boolean = false;
+      //let returnVal: CidmeResource | boolean = false;
+      let returnVal: CidmeResource | boolean;
 
       if (cidmeResource['@id'] === resourceId) {
         return cidmeResource;
@@ -1256,6 +1259,138 @@ class Cidme {
   
       return false;
     }
+
+
+  /*
+     * Returns an object containing a portion (or all) of a cidmeResource based on the requested resourceId as well as an array containing the 'breadcrumb' path to find the specificed resourceId within the full resource.
+     * @param {string} resourceId - The @id of the resource to get.
+     * @param {object} cidmeResource - CIDME resource to search through.
+     * @param {object} cidmeBreadcrumbs - CIDME breadcrumbs array.
+     * @returns {object | boolean}
+     */
+    getResourceByIdWithBreadcrumbs (resourceId:string, cidmeResource:CidmeResource, cidmeBreadcrumbs:any): any {
+      if (!resourceId || !cidmeResource ) {
+        throw new Error('ERROR:  Missing or invalid argument.')
+      }
+
+      // Make sure we have a valid CIDME resource
+      if (!this.validate(cidmeResource)) {
+        throw new Error('ERROR:  Invalid passed CIDME resource.')
+      }
+
+      // Make sure we have a valid CIDME resource ID
+      try {
+        let resourceIdParsed:CidmeUri = this.parseCidmeUri(resourceId)
+
+        /* Stop StandardJS from complaining */
+        if (resourceIdParsed) { /* */ }
+      } catch (err) {
+        throw new Error('ERROR:  Invalid passed CIDME resource ID.')
+      }
+      
+      if (cidmeResource['@id'] === resourceId) {
+          cidmeBreadcrumbs.push(
+            {
+              cidmeResourceType:'entity',
+              cidmeResourceId:cidmeResource['@id']
+            }
+          );
+          
+          let returnVal2 = {
+            cidmeResource: cidmeResource,
+            cidmeBreadcrumbs: cidmeBreadcrumbs
+          };
+
+          return returnVal2;
+      }
+  
+      if (cidmeResource.hasOwnProperty('metadata')) {
+        for (let i:number = 0; i < cidmeResource['metadata'].length; i++) {
+          let returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['metadata'][i], cidmeBreadcrumbs);
+          if (!returnVal) {} else {
+            cidmeBreadcrumbs.push(
+              {
+                cidmeResourceType: 'metadata',
+                cidmeResourceId: returnVal['cidmeResource']['@id']
+              }
+            );
+
+            let returnVal2 = {
+              cidmeResource: returnVal['cidmeResource'],
+              cidmeBreadcrumbs: cidmeBreadcrumbs
+            };
+
+            return returnVal2;
+          }
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContexts')) {
+        for (let i:number = 0; i < cidmeResource['entityContexts'].length; i++) {
+          let returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContexts'][i], cidmeBreadcrumbs);
+          if (!returnVal) {} else {
+            cidmeBreadcrumbs.push(
+              {
+                cidmeResourceType: 'entityContexts',
+                cidmeResourceId: returnVal['cidmeResource']['@id']
+              }
+            );
+
+            let returnVal2 = {
+              cidmeResource: returnVal['cidmeResource'],
+              cidmeBreadcrumbs: cidmeBreadcrumbs
+            };
+
+            return returnVal2;
+          }
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContextData')) {
+        for (let i:number = 0; i < cidmeResource['entityContextData'].length; i++) {
+          let returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextData'][i], cidmeBreadcrumbs);
+          if (!returnVal) {} else {
+            cidmeBreadcrumbs.push(
+              {
+                cidmeResourceType: 'entityContextData',
+                cidmeResourceId: returnVal['cidmeResource']['@id']
+              }
+            );
+
+            let returnVal2 = {
+              cidmeResource: returnVal['cidmeResource'],
+              cidmeBreadcrumbs: cidmeBreadcrumbs
+            };
+
+            return returnVal2;
+          }
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+        for (let i:number = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+          let returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextLinks'][i], cidmeBreadcrumbs);
+          if (!returnVal) {} else {
+            cidmeBreadcrumbs.push(
+              {
+                cidmeResourceType: 'entityContextLink s',
+                cidmeResourceId: returnVal['cidmeResource']['@id']
+              }
+            );
+
+            let returnVal2 = {
+              cidmeResource: returnVal['cidmeResource'],
+              cidmeBreadcrumbs: cidmeBreadcrumbs
+            };
+
+            return returnVal2;
+          }
+        }
+      }
+  
+      return false;
+    }
+
 
   /* ********************************************************************** */
 
