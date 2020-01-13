@@ -1,6 +1,6 @@
 {
   "name": "cidme",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "description": "Contextual IDentity Management Engine (CIDME)",
   "scripts": {
     "test": "cd test;jest cidme.test.js",
@@ -18,12 +18,13 @@
   "bugs": "https://github.com/cidme/CIDME-JS/issues",
   "main": "dist/cidme.js",
   "devDependencies": {
+    "ajv": "^6.0.0",
     "jest": "^23.6.0",
-    "uuidjs": "^4.0.3",
-    "typescript": "^3.2.2"
+    "jsonld": "^1.5.1",
+    "typescript": "^3.2.2",
+    "uuidjs": "^4.0.3"
   },
   "dependencies": {
-    "ajv": "^6.0.0"
   },
   "directories.lib": "dist",
   "directories.test": "test"

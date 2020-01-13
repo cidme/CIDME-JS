@@ -1,7 +1,7 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME core specification version 0.3.0.
+ * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018-2019
+ * @copyright Joe Thielen 2018-2020
  * @license MIT
  */
 
@@ -42,15 +42,15 @@ interface CidmeResource {
 }
 
 /**
- * Implements CIDME specification core functionality.  Currently supports CIDME core specification version 0.3.0.
+ * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
  * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018
+ * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.3
+ * @version 0.4.5
  */
 class Cidme {
 
-  cidmeCoreVersion:string
+  cidmeVersion:string
 
   jsonSchemaValidator:any
   uuidGenerator:any
@@ -86,7 +86,7 @@ class Cidme {
       throw new Error('Missing required arguments.')
     }
 
-    this['cidmeCoreVersion'] = '0.3.0'
+    this['cidmeVersion'] = '0.3.0'
 
     this['jsonSchemaValidator'] = jsonSchemaValidator
     this['uuidGenerator'] = uuidGenerator
@@ -106,7 +106,7 @@ class Cidme {
          * @member {string}
          */
     this['schemaCidme'] = {
-      'id': 'http://cidme.net/vocab/core/' + this['cidmeCoreVersion'] + '/cidme.schema.json',
+      'id': 'http://cidme.net/vocab/core/' + this['cidmeVersion'] + '/cidme.schema.json',
       'title': 'CIDME Entity',
       'type': 'object',
       'definitions': {
@@ -360,13 +360,13 @@ class Cidme {
     this['validateCidme'] = Object(jsonSchemaValidator.compile(this['schemaCidme']))
 
     /**
-         * URL of JSON-LD vocab for CIDME core resources.
+         * URL of JSON-LD vocab for CIDME resources.
          * @member {string}
          */
-    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeCoreVersion']
+    this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeVersion']
 
     /**
-         * URL of JSON-LD context for CIDME core resources.
+         * URL of JSON-LD context for CIDME resources.
          * @member {string}
          */
     this['jsonLdContext'] = this['jsonLdVocabUrl'] + '/jsonldcontext.json'
@@ -1068,6 +1068,53 @@ class Cidme {
   }
 
   /*
+     * Replaces a CIDME resource's data.  
+     * @param {string} resourceId - The @id of the resource to replace data.
+     * @param {object} cidmeResource - CIDME resource to add to.
+     * @param {object} data - The replacement JSON data.
+     * @returns {object}
+     */
+  replaceResourceData (resourceId:string, cidmeResource:CidmeResource, data:object):CidmeResource {
+    if (!resourceId || !cidmeResource || !data) {
+      throw new Error('ERROR:  Missing or invalid argument.')
+    }
+
+    if (cidmeResource['@id'] === resourceId ) {
+      if (!cidmeResource.hasOwnProperty('data')) {
+         cidmeResource['data'] = []
+      }
+
+      cidmeResource['data'] = data
+    }
+
+    if (cidmeResource.hasOwnProperty('metadata')) {
+      for (let i:number = 0; i < cidmeResource['metadata'].length; i++) {
+        cidmeResource['metadata'][i] = this.replaceResourceData(resourceId, cidmeResource['metadata'][i], data)
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContexts')) {
+      for (let i:number = 0; i < cidmeResource['entityContexts'].length; i++) {
+        cidmeResource['entityContexts'][i] = this.replaceResourceData(resourceId, cidmeResource['entityContexts'][i], data)
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContextData')) {
+      for (let i:number = 0; i < cidmeResource['entityContextData'].length; i++) {
+        cidmeResource['entityContextData'][i] = this.replaceResourceData(resourceId, cidmeResource['entityContextData'][i], data)
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+      for (let i:number = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+        cidmeResource['entityContextLinks'][i] = this.replaceResourceData(resourceId, cidmeResource['entityContextLinks'][i], data)
+      }
+    }
+
+    return cidmeResource
+  }
+
+  /*
      * Deletes a CIDME resource from a CIDME resource.  
      * @param {string} resourceId - The @id of the resource to delete.
      * @param {object} cidmeResource - CIDME resource to add to.
@@ -1142,6 +1189,77 @@ class Cidme {
   }
   /* ********************************************************************** */
 
+
+  /* ********************************************************************** */
+  // HELPER FUNCTIONS
+
+  /*
+     * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetadataGroup, an EntityContext, or another type of resource.
+     * @param {string} parentId - The @id of the resource to add to.
+     * @param {object} cidmeResource - CIDME resource to add to.
+     * @returns {boolean | object}
+     */
+    getResourceById (resourceId:string, cidmeResource:CidmeResource):CidmeResource | boolean {
+      if (!resourceId || !cidmeResource ) {
+        throw new Error('ERROR:  Missing or invalid argument.')
+      }
+
+      // Make sure we have a valid CIDME resource
+      if (!this.validate(cidmeResource)) {
+        throw new Error('ERROR:  Invalid passed CIDME resource.')
+      }
+
+      // Make sure we have a valid CIDME resource ID
+      try {
+        let resourceIdParsed:CidmeUri = this.parseCidmeUri(resourceId)
+
+        /* Stop StandardJS from complaining */
+        if (resourceIdParsed) { /* */ }
+
+      } catch (err) {
+        throw new Error('ERROR:  Invalid passed CIDME resource ID.')
+      }
+      
+      let returnVal: CidmeResource | boolean = false;
+
+      if (cidmeResource['@id'] === resourceId) {
+        return cidmeResource;
+      }
+  
+      if (cidmeResource.hasOwnProperty('metadata')) {
+        for (let i:number = 0; i < cidmeResource['metadata'].length; i++) {
+          returnVal = this.getResourceById(resourceId, cidmeResource['metadata'][i])
+          if (!returnVal) {} else {return returnVal;}
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContexts')) {
+        for (let i:number = 0; i < cidmeResource['entityContexts'].length; i++) {
+          returnVal = this.getResourceById(resourceId, cidmeResource['entityContexts'][i])
+          if (!returnVal) {} else {return returnVal;}
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContextData')) {
+        for (let i:number = 0; i < cidmeResource['entityContextData'].length; i++) {
+          returnVal = this.getResourceById(resourceId, cidmeResource['entityContextData'][i])
+          if (!returnVal) {} else {return returnVal;}
+        }
+      }
+  
+      if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+        for (let i:number = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+          returnVal = this.getResourceById(resourceId, cidmeResource['entityContextLinks'][i])
+          if (!returnVal) {} else {return returnVal;}
+        }
+      }
+  
+      return false;
+    }
+
+  /* ********************************************************************** */
+
+  
   /* ********************************************************************** */
   // MISC. FUNCTIONS
 
