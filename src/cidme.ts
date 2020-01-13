@@ -46,7 +46,7 @@ interface CidmeResource {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.5
+ * @version 0.4.6
  */
 class Cidme {
 
@@ -1194,9 +1194,9 @@ class Cidme {
   // HELPER FUNCTIONS
 
   /*
-     * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetadataGroup, an EntityContext, or another type of resource.
-     * @param {string} parentId - The @id of the resource to add to.
-     * @param {object} cidmeResource - CIDME resource to add to.
+     * Return a portion (or all) of a cidmeResource based on the requested resourceId.
+     * @param {string} resourceId - The @id of the resource to get.
+     * @param {object} cidmeResource - CIDME resource to search through.
      * @returns {boolean | object}
      */
     getResourceById (resourceId:string, cidmeResource:CidmeResource):CidmeResource | boolean {
