@@ -953,7 +953,7 @@ var Cidme = /** @class */ (function () {
         }
         return cidmeResource;
     };
-    /*
+    /**
        * Replaces a CIDME resource's data.
        * @param {string} resourceId - The @id of the resource to replace data.
        * @param {object} cidmeResource - CIDME resource to add to.
@@ -992,7 +992,7 @@ var Cidme = /** @class */ (function () {
         }
         return cidmeResource;
     };
-    /*
+    /**
        * Deletes a CIDME resource from a CIDME resource.
        * @param {string} resourceId - The @id of the resource to delete.
        * @param {object} cidmeResource - CIDME resource to add to.
@@ -1058,12 +1058,12 @@ var Cidme = /** @class */ (function () {
     /* ********************************************************************** */
     /* ********************************************************************** */
     // HELPER FUNCTIONS
-    /*
-       * Return a portion (or all) of a cidmeResource based on the requested resourceId.
-       * @param {string} resourceId - The @id of the resource to get.
-       * @param {object} cidmeResource - CIDME resource to search through.
-       * @returns {boolean | object}
-       */
+    /**
+      * Return a portion (or all) of a cidmeResource based on the requested resourceId.
+      * @param {string} resourceId - The @id of the resource to get.
+      * @param {object} cidmeResource - CIDME resource to search through.
+      * @returns {(boolean|object)}
+      */
     Cidme.prototype.getResourceById = function (resourceId, cidmeResource) {
         if (!resourceId || !cidmeResource) {
             throw new Error('ERROR:  Missing or invalid argument.');
@@ -1124,12 +1124,12 @@ var Cidme = /** @class */ (function () {
         }
         return false;
     };
-    /*
+    /**
        * Returns an object containing a portion (or all) of a cidmeResource based on the requested resourceId as well as an array containing the 'breadcrumb' path to find the specificed resourceId within the full resource.
        * @param {string} resourceId - The @id of the resource to get.
        * @param {object} cidmeResource - CIDME resource to search through.
-       * @param {object} cidmeBreadcrumbs - CIDME breadcrumbs array.
-       * @returns {object | boolean}
+       * @param {object} [cidmeBreadcrumbs] - CIDME breadcrumbs array for recusive calls, this should NOT be specified for normal calls.
+       * @returns {(object|boolean)}
        */
     Cidme.prototype.getResourceByIdWithBreadcrumbs = function (resourceId, cidmeResource, cidmeBreadcrumbs) {
         if (!resourceId || !cidmeResource) {
@@ -1148,9 +1148,12 @@ var Cidme = /** @class */ (function () {
         catch (err) {
             throw new Error('ERROR:  Invalid passed CIDME resource ID.');
         }
+        if (Array.isArray(cidmeBreadcrumbs) === false) {
+            cidmeBreadcrumbs = [];
+        }
         if (cidmeResource['@id'] === resourceId) {
-            cidmeBreadcrumbs.push({
-                cidmeResourceType: 'entity',
+            cidmeBreadcrumbs.unshift({
+                cidmeResourceType: cidmeResource['@type'],
                 cidmeResourceId: cidmeResource['@id']
             });
             var returnVal2 = {
@@ -1164,9 +1167,9 @@ var Cidme = /** @class */ (function () {
                 var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['metadata'][i], cidmeBreadcrumbs);
                 if (!returnVal) { }
                 else {
-                    cidmeBreadcrumbs.push({
-                        cidmeResourceType: 'metadata',
-                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['@type'],
+                        cidmeResourceId: cidmeResource['@id']
                     });
                     var returnVal2 = {
                         cidmeResource: returnVal['cidmeResource'],
@@ -1181,9 +1184,9 @@ var Cidme = /** @class */ (function () {
                 var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContexts'][i], cidmeBreadcrumbs);
                 if (!returnVal) { }
                 else {
-                    cidmeBreadcrumbs.push({
-                        cidmeResourceType: 'entityContexts',
-                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['@type'],
+                        cidmeResourceId: cidmeResource['@id']
                     });
                     var returnVal2 = {
                         cidmeResource: returnVal['cidmeResource'],
@@ -1198,9 +1201,9 @@ var Cidme = /** @class */ (function () {
                 var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextData'][i], cidmeBreadcrumbs);
                 if (!returnVal) { }
                 else {
-                    cidmeBreadcrumbs.push({
-                        cidmeResourceType: 'entityContextData',
-                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['@type'],
+                        cidmeResourceId: cidmeResource['@id']
                     });
                     var returnVal2 = {
                         cidmeResource: returnVal['cidmeResource'],
@@ -1215,9 +1218,9 @@ var Cidme = /** @class */ (function () {
                 var returnVal = this.getResourceByIdWithBreadcrumbs(resourceId, cidmeResource['entityContextLinks'][i], cidmeBreadcrumbs);
                 if (!returnVal) { }
                 else {
-                    cidmeBreadcrumbs.push({
-                        cidmeResourceType: 'entityContextLinks',
-                        cidmeResourceId: returnVal['cidmeResource']['@id']
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['@type'],
+                        cidmeResourceId: cidmeResource['@id']
                     });
                     var returnVal2 = {
                         cidmeResource: returnVal['cidmeResource'],
