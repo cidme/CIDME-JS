@@ -48,7 +48,7 @@ interface CidmeResource {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.6
+ * @version 0.4.7
  */
 class Cidme {
 
