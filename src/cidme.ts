@@ -96,17 +96,17 @@ class Cidme {
     this['debug'] = debug
 
     /**
-         * JSON schema for JSON-LD.  Taken from: http://json.schemastore.org/jsonld
-         * Original doesn't seem to work when $schema is included...
-         * @member {string}
-         */
+     * JSON schema for JSON-LD.  Taken from: http://json.schemastore.org/jsonld
+     * Original doesn't seem to work when $schema is included...
+     * @member {string}
+     */
     // this.schema = {"title":"Schema for JSON-LD","$schema":"http://json-schema.org/draft-04/schema#","definitions":{"context":{"additionalProperties":true,"properties":{"@context":{"description":"Used to define the short-hand names that are used throughout a JSON-LD document.","type":["object","string","array","null"]}}},"graph":{"additionalProperties":true,"properties":{"@graph":{"description":"Used to express a graph.","type":["array","object"],"additionalItems":{"anyOf":[{"$ref":"#/definitions/common"}]}}}},"common":{"additionalProperties":{"anyOf":[{"$ref":"#/definitions/common"}]},"properties":{"@id":{"description":"Used to uniquely identify things that are being described in the document with IRIs or blank node identifiers.","type":"string","format":"uri"},"@value":{"description":"Used to specify the data that is associated with a particular property in the graph.","type":["string","boolean","number","null"]},"@language":{"description":"Used to specify the language for a particular string value or the default language of a JSON-LD document.","type":["string","null"]},"@type":{"description":"Used to set the data type of a node or typed value.","type":["string","null","array"]},"@container":{"description":"Used to set the default container type for a term.","type":["string","null"],"enum":["@language","@list","@index","@set"]},"@list":{"description":"Used to express an ordered set of data."},"@set":{"description":"Used to express an unordered set of data and to ensure that values are always represented as arrays."},"@reverse":{"description":"Used to express reverse properties.","type":["string","object","null"],"additionalProperties":{"anyOf":[{"$ref":"#/definitions/common"}]}},"@base":{"description":"Used to set the base IRI against which relative IRIs are resolved","type":["string","null"],"format":"uri"},"@vocab":{"description":"Used to expand properties and values in @type with a common prefix IRI","type":["string","null"],"format":"uri"}}}},"allOf":[{"$ref":"#/definitions/context"},{"$ref":"#/definitions/graph"},{"$ref":"#/definitions/common"}],"type":["object","array"],"additionalProperties":true};
     this['schemaJsonLd'] = { 'title': 'Schema for JSON-LD', 'definitions': { 'context': { 'additionalProperties': true, 'properties': { '@context': { 'description': 'Used to define the short-hand names that are used throughout a JSON-LD document.', 'type': ['object', 'string', 'array', 'null'] } } }, 'graph': { 'additionalProperties': true, 'properties': { '@graph': { 'description': 'Used to express a graph.', 'type': ['array', 'object'], 'additionalItems': { 'anyOf': [{ '$ref': '#/definitions/common' }] } } } }, 'common': { 'additionalProperties': { 'anyOf': [{ '$ref': '#/definitions/common' }] }, 'properties': { '@id': { 'description': 'Used to uniquely identify things that are being described in the document with IRIs or blank node identifiers.', 'type': 'string', 'format': 'uri' }, '@value': { 'description': 'Used to specify the data that is associated with a particular property in the graph.', 'type': ['string', 'boolean', 'number', 'null'] }, '@language': { 'description': 'Used to specify the language for a particular string value or the default language of a JSON-LD document.', 'type': ['string', 'null'] }, '@type': { 'description': 'Used to set the data type of a node or typed value.', 'type': ['string', 'null', 'array'] }, '@container': { 'description': 'Used to set the default container type for a term.', 'type': ['string', 'null'], 'enum': ['@language', '@list', '@index', '@set'] }, '@list': { 'description': 'Used to express an ordered set of data.' }, '@set': { 'description': 'Used to express an unordered set of data and to ensure that values are always represented as arrays.' }, '@reverse': { 'description': 'Used to express reverse properties.', 'type': ['string', 'object', 'null'], 'additionalProperties': { 'anyOf': [{ '$ref': '#/definitions/common' }] } }, '@base': { 'description': 'Used to set the base IRI against which relative IRIs are resolved', 'type': ['string', 'null'], 'format': 'uri' }, '@vocab': { 'description': 'Used to expand properties and values in @type with a common prefix IRI', 'type': ['string', 'null'], 'format': 'uri' } } } }, 'allOf': [{ '$ref': '#/definitions/context' }, { '$ref': '#/definitions/graph' }, { '$ref': '#/definitions/common' }], 'type': ['object', 'array'], 'additionalProperties': true }
 
     /**
-         * JSON schema for CIDME resource.
-         * @member {string}
-         */
+     * JSON schema for CIDME resource.
+     * @member {string}
+     */
     this['schemaCidme'] = {
       'id': 'http://cidme.net/vocab/core/' + this['cidmeVersion'] + '/cidme.schema.json',
       'title': 'CIDME Entity',
@@ -350,32 +350,32 @@ class Cidme {
     }
 
     /**
-         * Set up json schema validator function for JSON-LD validation.
-         * @member {object}
-         */
+     * Set up json schema validator function for JSON-LD validation.
+     * @member {object}
+     */
     this['validateJsonLd'] = jsonSchemaValidator.compile(this['schemaJsonLd'])
 
     /**
-         * Set up json schema validator function for CIDME resource validation.
-         * @member {object}
-         */
+     * Set up json schema validator function for CIDME resource validation.
+     * @member {object}
+     */
     this['validateCidme'] = Object(jsonSchemaValidator.compile(this['schemaCidme']))
 
     /**
-         * URL of JSON-LD vocab for CIDME resources.
-         * @member {string}
-         */
+     * URL of JSON-LD vocab for CIDME resources.
+     * @member {string}
+     */
     this['jsonLdVocabUrl'] = 'http://cidme.net/vocab/core/' + this['cidmeVersion']
 
     /**
-         * URL of JSON-LD context for CIDME resources.
-         * @member {string}
-         */
+     * URL of JSON-LD context for CIDME resources.
+     * @member {string}
+     */
     this['jsonLdContext'] = this['jsonLdVocabUrl'] + '/jsonldcontext.json'
 
     /**
-         * Array of CIDME resource types
-         */
+     * Array of CIDME resource types
+     */
     this['resourceTypes'] = [
       'Entity',
       'EntityContext',
@@ -389,10 +389,10 @@ class Cidme {
   // VALIDATION FUNCTIONS
 
   /**
-     * Validate a CIDME resource
-     * @param {object} cidmeResource - Validates a JSON-LD string representation of a CIDME resource.
-     * @returns {boolean} Success
-     */
+   * Validate a CIDME resource
+   * @param {object} cidmeResource - Validates a JSON-LD string representation of a CIDME resource.
+   * @returns {boolean} Success
+   */
   validate (cidmeResource:any):boolean {
     // Validate as JSON-LD (via JSON schema validation)
     let validJsonLd:object = this['validateJsonLd'](cidmeResource)
@@ -462,10 +462,10 @@ class Cidme {
   }
 
   /**
-     * Validates a CIDME datastore name
-     * @param {string} datastore
-     * @returns {boolean}
-     */
+   * Validates a CIDME datastore name
+   * @param {string} datastore
+   * @returns {boolean}
+   */
   validateDatastore (datastore:string):boolean {
     if (
       datastore === 'public' ||
@@ -482,15 +482,12 @@ class Cidme {
   }
 
   /**
-     * Validates a CIDME resource type name
-     * @param {string} resourceType
-     * @returns {boolean}
-     */
+   * Validates a CIDME resource type name
+   * @param {string} resourceType
+   * @returns {boolean}
+   */
   validateResourceType (resourceType:string):boolean {
     if (this['resourceTypes'].indexOf(resourceType) >= 0) { return true }
-    //if (this['resourceTypes'].hasOwnProperty(resourceType)) { return true }
-    //console.log(this['resourceTypes'].find(x => x.id === resourceType))
-    //if (this['resourceTypes'].find(x => x.id === resourceType)) { return true }
 
     return false
   }
@@ -500,14 +497,14 @@ class Cidme {
   // CIDME RESOURCE CREATION FUNCTIONS
 
   /**
-     * Returns a CIDME entity resource.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.datastore=local] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Returns a CIDME entity resource.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.datastore=local] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   createEntityResource (options:Options):CidmeResource {
     let datastore:string = 'local'
     if (!options || !options['datastore']) {} else { datastore = options['datastore'] }
@@ -555,14 +552,14 @@ class Cidme {
   }
 
   /**
-     * Add a MetadataGroup resource to an existing resource with a type of CreatedMetadata.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Add a MetadataGroup resource to an existing resource with a type of CreatedMetadata.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   addCreatedMetadataToResource (parentId:string, cidmeResource:CidmeResource, options:Options):CidmeResource {
     let isoDate:any = new Date()
 
@@ -597,13 +594,13 @@ class Cidme {
   }
 
   /**
-     * Add a MetadataGroup resource to an existing resource with a type of LastModifiedMetadata.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @returns {object}
-     */
+   * Add a MetadataGroup resource to an existing resource with a type of LastModifiedMetadata.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @returns {object}
+   */
   addLastModifiedMetadataToResource (parentId:string, cidmeResource:CidmeResource, options:Options):CidmeResource {
     let isoDate:any = new Date()
 
@@ -638,14 +635,14 @@ class Cidme {
   }
 
   /**
-     * Returns a CIDME entity context resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Returns a CIDME entity context resource.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   createEntityContextResource (parentId:string, options:Options):CidmeResource {
     // Validate parentId.
     let parentIdObject:CidmeUri = this.parseCidmeUri(parentId)
@@ -698,15 +695,15 @@ class Cidme {
 
 
   /**
-     * Returns a CIDME metadata resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
-     * @param {string} [options.data] - RDF data in JSON-LD format to be added to the metadata data[] array.
-     * @param {string} [options.createMetadata=true] - Whether or not to add metadata to this metadata.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Returns a CIDME metadata resource.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
+   * @param {string} [options.data] - RDF data in JSON-LD format to be added to the metadata data[] array.
+   * @param {string} [options.createMetadata=true] - Whether or not to add metadata to this metadata.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   createMetadataGroupResource (parentId:string, options:Options):CidmeResource {
     // Validate parentId.
     let parentIdObject:CidmeUri = this.parseCidmeUri(parentId)
@@ -760,14 +757,14 @@ class Cidme {
   }
 
   /**
-     * Returns a CIDME entity context link group resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Returns a CIDME entity context link group resource.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   createEntityContextLinkGroupResource (parentId:string, options:Options):CidmeResource {
     // Validate parentId.
     let parentIdObject:CidmeUri = this.parseCidmeUri(parentId)
@@ -826,14 +823,14 @@ class Cidme {
   }
 
   /**
-     * Returns a CIDME entity context data group resource.
-     * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
-     * @param {object[]} [options] - An optional object containing optional values.
-     * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
-     * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
-     * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
-     * @returns {object}
-     */
+   * Returns a CIDME entity context data group resource.
+   * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
+   * @param {object[]} [options] - An optional object containing optional values.
+   * @param {string} [options.id] - If re-creating an existing resource, this is the resource ID to use.
+   * @param {string} [options.createMetadata=true] - The datastore name.  Use local for none or just local processing.  Use public for entities meant for public consumption.
+   * @param {string} [options.creatorId] - If specified, use this as the creatorId in any applicable metadata.
+   * @returns {object}
+   */
   createEntityContextDataGroupResource (parentId:string, options:Options):CidmeResource {
     // Validate parentId.
     let parentIdObject:CidmeUri = this.parseCidmeUri(parentId)
@@ -892,16 +889,17 @@ class Cidme {
   }
   /* ********************************************************************** */
 
+
   /* ********************************************************************** */
   // CIDME RESOURCE MANIPULATION FUNCTIONS
 
-  /*
-     * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetadataGroup, an EntityContext, or another type of resource.
-     * @param {string} parentId - The @id of the resource to add to.
-     * @param {object} cidmeResource - CIDME resource to add to.
-     * @param {object} resourceToAdd - The resource to add.
-     * @returns {object}
-     */
+  /**
+   * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetadataGroup, an EntityContext, or another type of resource.
+   * @param {string} parentId - The @id of the resource to add to.
+   * @param {object} cidmeResource - CIDME resource to add to.
+   * @param {object} resourceToAdd - The resource to add.
+   * @returns {object}
+   */
   addResourceToParent (parentId:string, cidmeResource:CidmeResource, resourceToAdd:CidmeResource):CidmeResource {
     if (!resourceToAdd || !this.validate(resourceToAdd)) {
       throw new Error('ERROR:  Missing or invalid resourceToAdd.')
@@ -954,11 +952,11 @@ class Cidme {
   }
 
   /**
-     * Adds a MetadataGroup to an existing CIDME resource.
-     * @param {object} cidmeResource - CIDME resource to add MetadataGroup to.
-     * @param {object} metadataGroup - MetadataGroup resource to add to CIDME resource.
-     * @returns {object}
-     */
+   * Adds a MetadataGroup to an existing CIDME resource.
+   * @param {object} cidmeResource - CIDME resource to add MetadataGroup to.
+   * @param {object} metadataGroup - MetadataGroup resource to add to CIDME resource.
+   * @returns {object}
+   */
   addMetadataGroupToResource (cidmeResource:CidmeResource, metadataGroup:CidmeResource):CidmeResource {
     if (!cidmeResource ||
             !metadataGroup ||
@@ -983,11 +981,11 @@ class Cidme {
   }
 
   /**
-     * Adds an EntityContext to an existing CIDME resource.
-     * @param {object} cidmeResource - CIDME resource to add EntityContext to.
-     * @param {object} entityContext - EntityContext resource to add to CIDME resource.
-     * @returns {object}
-     */
+   * Adds an EntityContext to an existing CIDME resource.
+   * @param {object} cidmeResource - CIDME resource to add EntityContext to.
+   * @param {object} entityContext - EntityContext resource to add to CIDME resource.
+   * @returns {object}
+   */
   addEntityContextToResource (cidmeResource:CidmeResource, entityContext:CidmeResource):CidmeResource {
     if (!cidmeResource ||
             !entityContext ||
@@ -1041,11 +1039,11 @@ class Cidme {
   }
 
   /**
-     * Adds an EntityContextDataGroup to an existing CIDME resource.
-     * @param {object} cidmeResource - CIDME resource to add EntityContextDataGroup to.
-     * @param {object} entityContextDataGroup - EntityContextDataGroup resource to add to CIDME resource.
-     * @returns {object}
-     */
+   * Adds an EntityContextDataGroup to an existing CIDME resource.
+   * @param {object} cidmeResource - CIDME resource to add EntityContextDataGroup to.
+   * @param {object} entityContextDataGroup - EntityContextDataGroup resource to add to CIDME resource.
+   * @returns {object}
+   */
   addEntityContextDataGroupToResource (cidmeResource:CidmeResource, entityContextDataGroup:CidmeResource):CidmeResource {
     if (!cidmeResource ||
             !entityContextDataGroup ||
@@ -1070,12 +1068,12 @@ class Cidme {
   }
 
   /**
-     * Replaces a CIDME resource's data.  
-     * @param {string} resourceId - The @id of the resource to replace data.
-     * @param {object} cidmeResource - CIDME resource to add to.
-     * @param {object} data - The replacement JSON data.
-     * @returns {object}
-     */
+   * Replaces a CIDME resource's data.  
+   * @param {string} resourceId - The @id of the resource to replace data.
+   * @param {object} cidmeResource - CIDME resource to add to.
+   * @param {object} data - The replacement JSON data.
+   * @returns {object}
+   */
   replaceResourceData (resourceId:string, cidmeResource:CidmeResource, data:object):CidmeResource {
     if (!resourceId || !cidmeResource || !data) {
       throw new Error('ERROR:  Missing or invalid argument.')
@@ -1117,11 +1115,11 @@ class Cidme {
   }
 
   /**
-     * Deletes a CIDME resource from a CIDME resource.  
-     * @param {string} resourceId - The @id of the resource to delete.
-     * @param {object} cidmeResource - CIDME resource to add to.
-     * @returns {(object|null)}
-     */
+   * Deletes a CIDME resource from a CIDME resource.  
+   * @param {string} resourceId - The @id of the resource to delete.
+   * @param {object} cidmeResource - CIDME resource to add to.
+   * @returns {(object|null)}
+   */
   deleteResource (resourceId:string, cidmeResource:CidmeResource):CidmeResource|null {
     if (!resourceId || !cidmeResource) {
       throw new Error('ERROR:  Missing or invalid argument.')
@@ -1196,11 +1194,11 @@ class Cidme {
   // HELPER FUNCTIONS
 
   /**
-    * Return a portion (or all) of a cidmeResource based on the requested resourceId.
-    * @param {string} resourceId - The @id of the resource to get.
-    * @param {object} cidmeResource - CIDME resource to search through.
-    * @returns {(boolean|object)}
-    */
+   * Return a portion (or all) of a cidmeResource based on the requested resourceId.
+   * @param {string} resourceId - The @id of the resource to get.
+   * @param {object} cidmeResource - CIDME resource to search through.
+   * @returns {(boolean|object)}
+   */
   getResourceById (resourceId:string, cidmeResource:CidmeResource):CidmeResource | boolean {
     if (!resourceId || !cidmeResource ) {
       throw new Error('ERROR:  Missing or invalid argument.')
@@ -1262,12 +1260,12 @@ class Cidme {
 
 
   /**
-     * Returns an object containing a portion (or all) of a cidmeResource based on the requested resourceId as well as an array containing the 'breadcrumb' path to find the specificed resourceId within the full resource.
-     * @param {string} resourceId - The @id of the resource to get.
-     * @param {object} cidmeResource - CIDME resource to search through.
-     * @param {object} [cidmeBreadcrumbs] - CIDME breadcrumbs array for recusive calls, this should NOT be specified for normal calls.
-     * @returns {(object|boolean)}
-     */
+   * Returns an object containing a portion (or all) of a cidmeResource based on the requested resourceId as well as an array containing the 'breadcrumb' path to find the specificed resourceId within the full resource.
+   * @param {string} resourceId - The @id of the resource to get.
+   * @param {object} cidmeResource - CIDME resource to search through.
+   * @param {object} [cidmeBreadcrumbs] - CIDME breadcrumbs array for recusive calls, this should NOT be specified for normal calls.
+   * @returns {(object|boolean)}
+   */
   getResourceByIdWithBreadcrumbs (resourceId:string, cidmeResource:CidmeResource, cidmeBreadcrumbs:any): any {
     if (!resourceId || !cidmeResource ) {
       throw new Error('ERROR:  Missing or invalid argument.')
@@ -1401,12 +1399,12 @@ class Cidme {
   // MISC. FUNCTIONS
 
   /**
-     * Returns a CIDME resource URI given a datastore, resourceType , and ID.
-     * @param {string} datastore
-     * @param {string} resourceType
-     * @param {(string|boolean)} id
-     * @returns {string}
-     */
+   * Returns a CIDME resource URI given a datastore, resourceType , and ID.
+   * @param {string} datastore
+   * @param {string} resourceType
+   * @param {(string|boolean)} id
+   * @returns {string}
+   */
   getCidmeUri (datastore:string, resourceType:string, id:string):string {
     if (!this.validateDatastore(datastore)) {
       throw new Error('ERROR:  Invalid datastore specified.')
@@ -1427,10 +1425,10 @@ class Cidme {
   }
 
   /**
-     * Returns an object containing CIDME resource URI elements.
-     * @param {string} CIDME resource ID
-     * @returns {object}
-     */
+   * Returns an object containing CIDME resource URI elements.
+   * @param {string} CIDME resource ID
+   * @returns {object}
+   */
   parseCidmeUri (id:string):CidmeUri {
     if (!id) {
       throw new Error('ERROR:  No URI specified.')
@@ -1453,9 +1451,9 @@ class Cidme {
   }
 
   /**
-     * Output debugging information
-     * @param {*} data - The data to output
-     */
+   * Output debugging information
+   * @param {*} data - The data to output
+   */
   debugOutput (data:any):void {
     if (this['debug'] === true) {
       console.log(data)
