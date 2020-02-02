@@ -176,16 +176,40 @@ function validateMetadataGroupResource(resource, options) {
         }
     }
 
+    if (
+        typeof resource['groupDataType'] === 'object' &&
+        resource['groupDataType'].length > 0
+    ) {
+        for (let i = 0; i < resource['groupDataType'].length; i++) {
+            expect(typeof resource['groupDataType'][i]).toBe('object')
+            if (
+                typeof resource['groupDataType'][i]['@context'] !== 'string' &&
+                typeof resource['groupDataType'][i]['@context'] !== 'object'
+            ) {
+                expect(true).toBe(false)
+            }
+        }
+    }
+
+    if (!options.groupDataType) {} else {
+        if (
+            typeof resource['groupDataType'] !== 'object' ||
+            resource['groupDataType'].length < 1
+        ) {
+            expect(true).toBe(false)
+        }
+    }
+
     return true
 }
 
 function validateCreatedMetadata(resource, options) {
     expect(validateMetadataGroupResource(resource, options)).toBe(true)
 
-    expect(resource['data'][0]['@type']).toBe('CreatedMetadata')
-    expect(resource['data'][1]['creator']).toBe(options.creatorId)
-    expect(Date.parse(resource['data'][1]['created'])).toBeLessThanOrEqual(Date.now())
-    expect(Date.parse(resource['data'][1]['created'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+    expect(resource['groupDataType'][0]['@type']).toBe('CreatedMetadata')
+    expect(resource['data'][0]['creator']).toBe(options.creatorId)
+    expect(Date.parse(resource['data'][0]['created'])).toBeLessThanOrEqual(Date.now())
+    expect(Date.parse(resource['data'][0]['created'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
 
     return true
 }
@@ -193,10 +217,10 @@ function validateCreatedMetadata(resource, options) {
 function validateLastModifiedMetadata(resource, options) {
     expect(validateMetadataGroupResource(resource, options)).toBe(true)
 
-    expect(resource['data'][0]['@type']).toBe('LastModifiedMetadata')
-    expect(resource['data'][1]['creator']).toBe(options.creatorId)
-    expect(Date.parse(resource['data'][1]['modified'])).toBeLessThanOrEqual(Date.now())
-    expect(Date.parse(resource['data'][1]['modified'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+    expect(resource['groupDataType'][0]['@type']).toBe('LastModifiedMetadata')
+    expect(resource['data'][0]['creator']).toBe(options.creatorId)
+    expect(Date.parse(resource['data'][0]['modified'])).toBeLessThanOrEqual(Date.now())
+    expect(Date.parse(resource['data'][0]['modified'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
 
     return true
 }
@@ -703,7 +727,7 @@ test('Validate internally-created basic MetadataGroup w/creatorId', () => {
 test('Validate internally-created basic MetadataGroup - with data', () => {
     let options = []
     options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
     }]
 
@@ -807,7 +831,7 @@ test('Validate internally-created basic EntityContextDataGroup w/creatorId', () 
 test('Validate internally-created basic EntityContextDataGroup - with data', () => {
     let options = []
     options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
     }]
 
@@ -914,7 +938,7 @@ test('Validate internally-created basic EntityContextLinkGroup w/creatorId', () 
 test('Validate internally-created basic EntityContextLinkGroup - with data', () => {
     let options = []
     options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
     }]
 
@@ -1404,7 +1428,7 @@ test('Validate externally-created basic Entity w/no metadata', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34'
     }
@@ -1419,42 +1443,40 @@ test('Validate externally-created basic Entity', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ]
     }
@@ -1471,42 +1493,40 @@ test('Validate externally-created basic Entity w/creatorId', () => {
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ]
     }
@@ -1522,7 +1542,7 @@ test('Validate externally-created basic Entity - BAD: with extra data', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'extra': 'Extra stuff here.'
@@ -1539,7 +1559,7 @@ test('Validate externally-created basic EntityContext w/no metadata', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
     }
@@ -1552,42 +1572,40 @@ test('Validate externally-created basic EntityContext', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ]
     }
@@ -1601,42 +1619,40 @@ test('Validate externally-created basic EntityContext w/creatorId', () => {
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ]
     }
@@ -1649,7 +1665,7 @@ test('Validate externally-created basic EntityContext - BAD: with extra data', (
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContext',
         '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
         'extra': 'Extra stuff here.'
@@ -1666,11 +1682,11 @@ test('Validate externally-created Entity/EntityContext w/no metadata', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
         }]
@@ -1685,81 +1701,77 @@ test('Validate externally-created Entity/EntityContext', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 }
             ]
         }]
@@ -1775,81 +1787,77 @@ test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 }
             ]
         }]
@@ -1865,7 +1873,7 @@ test('Validate externally-created basic EntityContextLinkGroup w/no metadata', (
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
     }
@@ -1878,42 +1886,40 @@ test('Validate externally-created basic EntityContextLinkGroup', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ]
     }
@@ -1927,42 +1933,40 @@ test('Validate externally-created basic EntityContextLinkGroup w/creatorId', () 
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ]
     }
@@ -1976,7 +1980,7 @@ test('Validate externally-created basic EntityContextLinkGroup - with empty data
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'data': []
@@ -1992,11 +1996,11 @@ test('Validate externally-created basic EntityContextLinkGroup - with data', () 
     options.hasEntityContextLinkGroupData = true
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'data': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
         }]
     }
@@ -2011,7 +2015,7 @@ test('Validate externally-created basic EntityContextLinkGroup - with data - BAD
     options.hasEntityContextLinkGroupData = true
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'data': [{
@@ -2026,7 +2030,7 @@ test('Validate externally-created basic EntityContextLinkGroup - BAD: with extra
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextLinkGroup',
         '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'extra': 'Extra stuff here.'
@@ -2043,15 +2047,15 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
             }]
@@ -2068,120 +2072,114 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', 
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 }
             ],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     }
                 ]
             }]
@@ -2199,124 +2197,118 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup - 
     options.hasEntityContextLinkGroupData = true
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 }
             ],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     }
                 ],
                 'data': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
                 }]
             }]
@@ -2334,120 +2326,114 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 }
             ],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     }
                 ]
             }]
@@ -2465,7 +2451,7 @@ test('Validate externally-created basic EntityContextDataGroup w/no metadata', (
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
     }
@@ -2478,42 +2464,40 @@ test('Validate externally-created basic EntityContextDataGroup', () => {
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ]
     }
@@ -2527,42 +2511,40 @@ test('Validate externally-created basic EntityContextDataGroup w/creatorId', () 
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ]
     }
@@ -2580,11 +2562,11 @@ test('Validate externally-created basic EntityContextDataGroup - with data', () 
     options.hasEntityContextDataGroupData = true
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'data': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
         }]
     }
@@ -2599,7 +2581,7 @@ test('Validate externally-created basic EntityContextDataGroup - with data - BAD
     options.hasEntityContextDataGroupData = true
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
         'data': [{
@@ -2614,7 +2596,7 @@ test('Validate externally-created basic EntityContextDataGroup - BAD: with extra
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
         'extra': 'Extra stuff here.'
@@ -2630,7 +2612,7 @@ test('Validate externally-created basic EntityContextDataGroup - with empty data
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'EntityContextDataGroup',
         '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
         'data': []
@@ -2647,15 +2629,15 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
             }]
@@ -2672,120 +2654,114 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', 
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 }
             ],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     }
                 ]
             }]
@@ -2803,120 +2779,114 @@ test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 }
             ],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     }
                 ]
             }]
@@ -2934,20 +2904,20 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
             }],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
             }]
@@ -2965,160 +2935,152 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': null
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': null
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': null
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': null
+                    }]
                 }
             ],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     }
                 ]
             }],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': null
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': null
+                        }]
                     }
                 ]
             }]
@@ -3137,160 +3099,152 @@ test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/En
     options.creatorId = creatorId
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'CreatedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'created': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             },
             {
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
+                'groupDataType': [{
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                    '@type': 'LastModifiedMetadata'
+                }],
                 'data': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
+                    '@context': {
+                        '@vocab': 'http://purl.org/dc/terms/'
                     },
-                    {
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2018-11-27T18:19:58.996Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }
-                ]
+                    'modified': '2020-02-01T09:30:00.000Z',
+                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                }]
             }
         ],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'CreatedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'created': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 },
                 {
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
+                    'groupDataType': [{
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                        '@type': 'LastModifiedMetadata'
+                    }],
                     'data': [{
-                            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
+                        '@context': {
+                            '@vocab': 'http://purl.org/dc/terms/'
                         },
-                        {
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2018-11-27T18:19:58.996Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }
-                    ]
+                        'modified': '2020-02-01T09:30:00.000Z',
+                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                    }]
                 }
             ],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     }
                 ]
             }],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
                 'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'CreatedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'CreatedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'created': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'created': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     },
                     {
-                        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                         '@type': 'MetadataGroup',
                         '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
+                        'groupDataType': [{
+                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
+                            '@type': 'LastModifiedMetadata'
+                        }],
                         'data': [{
-                                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
-                                '@type': 'LastModifiedMetadata'
+                            '@context': {
+                                '@vocab': 'http://purl.org/dc/terms/'
                             },
-                            {
-                                '@context': {
-                                    '@vocab': 'http://purl.org/dc/terms/'
-                                },
-                                'modified': '2018-11-27T18:19:58.996Z',
-                                'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                            }
-                        ]
+                            'modified': '2020-02-01T09:30:00.000Z',
+                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+                        }]
                     }
                 ]
             }]
@@ -3309,7 +3263,7 @@ test('Validate externally-created basic MetadataGroup w/no metadata', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
     }
@@ -3323,7 +3277,7 @@ test('Validate externally-created basic MetadataGroup - with empty data array', 
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
         'data': []
@@ -3337,7 +3291,7 @@ test('Validate externally-created basic MetadataGroup - BAD: with extra data', (
     let options = []
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
         'extra': 'Extra stuff here.'
@@ -3354,11 +3308,11 @@ test('Validate externally-created nested MetadataGroup', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'MetadataGroup',
         '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/86c8edcf-93d5-4c57-b3f0-c59554fe07ec'
         }]
@@ -3374,11 +3328,11 @@ test('Validate externally-created Entity/MetadataGroup', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
         }]
@@ -3393,20 +3347,20 @@ test('Validate externally-created Entity/EntityContext/MetadataGroup', () => {
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
         }],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
             }]
@@ -3424,29 +3378,29 @@ test('Validate externally-created Entity/EntityContext/EntityContextData/Metadat
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
         }],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
             }],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
                 }]
@@ -3468,29 +3422,29 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/Metadat
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
         }],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
             }],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
                 }]
@@ -3512,39 +3466,39 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityC
     options.createMetadata = false
 
     let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
         '@type': 'Entity',
         '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
         'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'MetadataGroup',
             '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
         }],
         'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
             '@type': 'EntityContext',
             '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
             'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'MetadataGroup',
                 '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
             }],
             'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextLinkGroup',
                 '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
                 'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
                 }]
             }],
             'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                 '@type': 'EntityContextDataGroup',
                 '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
                 'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.3.0/jsonldcontext.json',
+                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
                     '@type': 'MetadataGroup',
                     '@id': 'cidme://local/MetadataGroup/d9166d1d-b320-42a8-ac79-f3a732e94b7c'
                 }]
@@ -3569,7 +3523,7 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityC
 /* ************************************************************************** */
 // Test helper functions
 
-let testResource = { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "Entity", "@id": "cidme://local/Entity/4308edca-3788-4ab4-9d87-c5ec1c37705f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f96c7c3e-3970-44a4-91b0-c0c1789f34cf", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.119Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/17dfa7b0-4bdd-4e1f-9e03-4ab7f43b6259", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.122Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/44afa961-6946-4570-be4c-66b87947bb21", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/efa4bd4c-8103-4099-b74b-8b7a36eabef5", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:01.049Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c46a3b1-1ab3-4900-8b1b-c337b9b55991", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:01.050Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/3f9bb027-6d86-4300-8914-cbe801420e39", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "entityTypeMetadata", "entityType": "http://cidme.net/vocab/ext/0.1.0/ThingEntityType" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/082f8be8-f11d-469c-b2d0-85688d7702db", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:09.072Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/093d218d-1340-40a2-9042-c0b09fe0f962", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:09.072Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/b278c894-58fe-478b-99c4-a119651d3417", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dbc6bd2d-beae-4d75-9106-3b85e9ffb13d", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.123Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/a644c7de-0984-4f39-8bd6-1a78f1340314", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.124Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9370e2cb-5984-4e01-b66d-67f1141ee521", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #1 (DEFAULT) V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e4117745-ffe5-4d85-83b1-57ec4bfc3f1b", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:04.132Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/557f52d1-fc6d-4668-9902-571ee74b9ebf", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:04.133Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d87c12b3-c722-489e-b800-9572e44c5cd1", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "DefaultMetadata", "default": true }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6da1869c-0dc0-4786-84da-41b5bbb78434", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:12:42.094Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/274db826-f283-44cb-a9d0-b288fc1cb400", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:12:42.095Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/122634c3-e607-4472-acdc-e0e080919170", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd21e3b7-353e-4422-9d44-9a12e2961354", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:12.552Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c4f3fdd-1297-4a7e-99d2-8a660dbdeb9a", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:12.552Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/454a13cc-07ee-4e17-ae81-6b01fc158544", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/99d3f8c2-894c-4ffb-9a9d-1adeb512c02a", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:34.671Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/92d53725-7b46-4185-bbd4-e9eaab257d99", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:34.672Z", "creator": null }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/dd506b14-b1ff-4da5-87d5-2b733eaa3e2f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9e7f0cb-718c-4f61-b314-8fb8b989abbe", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.125Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e6a08810-2194-4e8b-9502-d2e0d3d5ba6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.126Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/593a5efc-0505-4c7a-8230-4b83b3755494", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/631d3879-0a26-4b3c-bec0-e8fa268f7325", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:17.376Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/87dd16ad-6952-4e57-9e06-94652c2d14d4", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:17.376Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/6235f661-7c4a-4425-88f8-d69af0bdc0eb", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/72ec15ab-6dbf-483b-bbd8-e95d40995ec8", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:09.301Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/08234a49-38f2-4505-9559-abb5280dbf71", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:09.302Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/1976bf1c-6bbe-4238-b4e2-354108291a61", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/b16e9270-1214-42d3-91b2-c85e75ec68e1", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:15.929Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939f169b-3583-46da-81d9-000c12fa91b4", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:15.929Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/23f111f9-557b-44be-ac6c-1cad12187b56", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/317b8f37-12ab-472e-bed2-ed5c48e54d76", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:22:32.971Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/1dc3af10-b127-40d4-823a-aad6e4bc8ff8", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:22:32.972Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f5f7202c-3e28-4d78-aee2-065d1bef7067", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cb057290-ef3d-41e4-a4d7-a72a161b54dc", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:23:26.599Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/39105a8d-c952-44d4-90b6-1b0f9111d37d", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:23:26.600Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/d404fd9e-3704-4ecc-be14-4ba31b0c8342", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939ea1b8-74d7-4056-8689-edc664fa32c1", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:26:46.545Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/0e4e1564-cf14-46e1-9601-b96531226723", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:26:46.545Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/39f30804-8025-44ea-9b73-af2016de4798", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/38f3a632-58a1-461e-ac7b-7f6d80f2faea", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:27:00.363Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd2e793b-a8b3-463d-95a2-b155e4262262", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:27:00.363Z", "creator": null }] }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/61b6918e-ca4e-46fc-bd4a-5aa0bd72cd65", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/811f35ac-9728-4e48-8932-1637e27e087a", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cac1e39b-7cc9-4e02-9ddd-c77862ebc204", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/ba1c90c2-4b9d-4fec-9120-82641ad68719", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/89b95f5a-48a1-4b45-b574-da72696cc3a4", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:29.405Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/2744c833-489b-4918-b7a3-d480f885c3b6", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:29.406Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/cbc1ae2c-59c6-4398-af9f-7208c4f5972f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/beb7afdc-9c61-427b-b395-12278ffe6195", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:39.670Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9d3f6e9a-b60e-41a5-84d6-03799676349c", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:39.670Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/5aab590f-5aeb-4db0-b407-949b7cbd262b", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/04c4eeda-9634-40d2-92fb-84e09fee87a6", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:49.359Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/50872b88-3673-4dba-9598-d11300b39c6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:49.360Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/1e7b4196-1211-4de6-96bc-c15a8899a57c", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9c1d1e9-e238-4baa-8297-3dc18de66be0", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:28:30.454Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/7017fc45-6a7f-4629-ad05-e85211f902ab", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:28:30.455Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/977fec9a-e643-44d3-9533-02eb1057e6e7", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6832638b-7fe6-4cc1-9567-08c619cc6a43", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:09.687Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/013c74ed-ad06-4f61-9251-fc996e21c907", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:09.688Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/815b3bd3-f96c-46cd-a2ee-271abb5a1994", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e942a09-632c-4b12-aa0b-d72d6b835daa", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:41.750Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e89bc60-0cc8-4655-850f-5c4576c12fb3", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:41.750Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/76f124bd-9a79-4a51-ae5c-b5d1fc651fc0", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d49b236c-023f-4265-86a2-fe9bb3dc043f", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:30:01.345Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f452a384-e7bb-4239-9bc8-536bf8c5a75a", "data": [{ "@context": "http://cidme.net/vocab/core/0.3.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:30:01.346Z", "creator": null }] }] }] }] }] }
+let testResource = { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "Entity", "@id": "cidme://local/Entity/4308edca-3788-4ab4-9d87-c5ec1c37705f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f96c7c3e-3970-44a4-91b0-c0c1789f34cf", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.119Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/17dfa7b0-4bdd-4e1f-9e03-4ab7f43b6259", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.122Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/44afa961-6946-4570-be4c-66b87947bb21", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/efa4bd4c-8103-4099-b74b-8b7a36eabef5", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:01.049Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c46a3b1-1ab3-4900-8b1b-c337b9b55991", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:01.050Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/3f9bb027-6d86-4300-8914-cbe801420e39", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "entityTypeMetadata", "entityType": "http://cidme.net/vocab/ext/0.1.0/ThingEntityType" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/082f8be8-f11d-469c-b2d0-85688d7702db", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:09.072Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/093d218d-1340-40a2-9042-c0b09fe0f962", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:09.072Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/b278c894-58fe-478b-99c4-a119651d3417", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dbc6bd2d-beae-4d75-9106-3b85e9ffb13d", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.123Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/a644c7de-0984-4f39-8bd6-1a78f1340314", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.124Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9370e2cb-5984-4e01-b66d-67f1141ee521", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #1 (DEFAULT) V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e4117745-ffe5-4d85-83b1-57ec4bfc3f1b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:04.132Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/557f52d1-fc6d-4668-9902-571ee74b9ebf", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:04.133Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d87c12b3-c722-489e-b800-9572e44c5cd1", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "DefaultMetadata", "default": true }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6da1869c-0dc0-4786-84da-41b5bbb78434", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:12:42.094Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/274db826-f283-44cb-a9d0-b288fc1cb400", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:12:42.095Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/122634c3-e607-4472-acdc-e0e080919170", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd21e3b7-353e-4422-9d44-9a12e2961354", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:12.552Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c4f3fdd-1297-4a7e-99d2-8a660dbdeb9a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:12.552Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/454a13cc-07ee-4e17-ae81-6b01fc158544", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/99d3f8c2-894c-4ffb-9a9d-1adeb512c02a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:34.671Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/92d53725-7b46-4185-bbd4-e9eaab257d99", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:34.672Z", "creator": null }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/dd506b14-b1ff-4da5-87d5-2b733eaa3e2f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9e7f0cb-718c-4f61-b314-8fb8b989abbe", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.125Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e6a08810-2194-4e8b-9502-d2e0d3d5ba6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.126Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/593a5efc-0505-4c7a-8230-4b83b3755494", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/631d3879-0a26-4b3c-bec0-e8fa268f7325", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:17.376Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/87dd16ad-6952-4e57-9e06-94652c2d14d4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:17.376Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/6235f661-7c4a-4425-88f8-d69af0bdc0eb", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/72ec15ab-6dbf-483b-bbd8-e95d40995ec8", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:09.301Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/08234a49-38f2-4505-9559-abb5280dbf71", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:09.302Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/1976bf1c-6bbe-4238-b4e2-354108291a61", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/b16e9270-1214-42d3-91b2-c85e75ec68e1", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:15.929Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939f169b-3583-46da-81d9-000c12fa91b4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:15.929Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/23f111f9-557b-44be-ac6c-1cad12187b56", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/317b8f37-12ab-472e-bed2-ed5c48e54d76", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:22:32.971Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/1dc3af10-b127-40d4-823a-aad6e4bc8ff8", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:22:32.972Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f5f7202c-3e28-4d78-aee2-065d1bef7067", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cb057290-ef3d-41e4-a4d7-a72a161b54dc", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:23:26.599Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/39105a8d-c952-44d4-90b6-1b0f9111d37d", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:23:26.600Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/d404fd9e-3704-4ecc-be14-4ba31b0c8342", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939ea1b8-74d7-4056-8689-edc664fa32c1", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:26:46.545Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/0e4e1564-cf14-46e1-9601-b96531226723", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:26:46.545Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/39f30804-8025-44ea-9b73-af2016de4798", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/38f3a632-58a1-461e-ac7b-7f6d80f2faea", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:27:00.363Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd2e793b-a8b3-463d-95a2-b155e4262262", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:27:00.363Z", "creator": null }] }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/61b6918e-ca4e-46fc-bd4a-5aa0bd72cd65", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/811f35ac-9728-4e48-8932-1637e27e087a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cac1e39b-7cc9-4e02-9ddd-c77862ebc204", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/ba1c90c2-4b9d-4fec-9120-82641ad68719", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/89b95f5a-48a1-4b45-b574-da72696cc3a4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:29.405Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/2744c833-489b-4918-b7a3-d480f885c3b6", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:29.406Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/cbc1ae2c-59c6-4398-af9f-7208c4f5972f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/beb7afdc-9c61-427b-b395-12278ffe6195", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:39.670Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9d3f6e9a-b60e-41a5-84d6-03799676349c", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:39.670Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/5aab590f-5aeb-4db0-b407-949b7cbd262b", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/04c4eeda-9634-40d2-92fb-84e09fee87a6", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:49.359Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/50872b88-3673-4dba-9598-d11300b39c6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:49.360Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/1e7b4196-1211-4de6-96bc-c15a8899a57c", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9c1d1e9-e238-4baa-8297-3dc18de66be0", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:28:30.454Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/7017fc45-6a7f-4629-ad05-e85211f902ab", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:28:30.455Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/977fec9a-e643-44d3-9533-02eb1057e6e7", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6832638b-7fe6-4cc1-9567-08c619cc6a43", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:09.687Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/013c74ed-ad06-4f61-9251-fc996e21c907", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:09.688Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/815b3bd3-f96c-46cd-a2ee-271abb5a1994", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e942a09-632c-4b12-aa0b-d72d6b835daa", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:41.750Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e89bc60-0cc8-4655-850f-5c4576c12fb3", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:41.750Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/76f124bd-9a79-4a51-ae5c-b5d1fc651fc0", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d49b236c-023f-4265-86a2-fe9bb3dc043f", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:30:01.345Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f452a384-e7bb-4239-9bc8-536bf8c5a75a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:30:01.346Z", "creator": null }] }] }] }] }] }
 
 
 test('Test getResourceById - Invalid resource ID', () => {

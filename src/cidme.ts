@@ -1,5 +1,5 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
@@ -15,7 +15,8 @@ interface Options {
   datastore?: string,
   createMetadata?: boolean,
   creatorId?: string,
-  data?: object
+  data?: object,
+  groupDataType?: object
 }
 
 /**
@@ -38,17 +39,18 @@ interface CidmeResource {
   entityContextData?: any,
   entityContextLinks?: any,
   metadata?: any,
-  data?: object
+  data?: object,
+  groupDataType?: object
 }
 
 
 
 /**
- * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.7
+ * @version 0.5.0
  */
 class Cidme {
 
@@ -88,7 +90,7 @@ class Cidme {
       throw new Error('Missing required arguments.')
     }
 
-    this['cidmeVersion'] = '0.3.0'
+    this['cidmeVersion'] = '0.4.0'
 
     this['jsonSchemaValidator'] = jsonSchemaValidator
     this['uuidGenerator'] = uuidGenerator
@@ -117,6 +119,9 @@ class Cidme {
           'format': 'uri'
         },
         '@dataContext': {
+          'type': ['string', 'object']
+        },
+        '@groupDataTypeContext': {
           'type': ['string', 'object']
         },
         'Entity': {
@@ -219,6 +224,12 @@ class Cidme {
               'items': {
                 '$ref': '#/definitions/Data'
               }
+            },
+            'groupDataType': {
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/GroupDataType'
+              }
             }
           },
           'required': ['@context', '@id', '@type'],
@@ -250,7 +261,13 @@ class Cidme {
               'items': {
                 '$ref': '#/definitions/Data'
               }
-            }
+            },
+            'groupDataType': {
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/GroupDataType'
+              }
+            }            
           },
           'required': ['@context', '@id', '@type'],
           'additionalProperties': false
@@ -281,6 +298,12 @@ class Cidme {
               'items': {
                 '$ref': '#/definitions/Data'
               }
+            },
+            'groupDataType': {
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/GroupDataType'
+              }
             }
           },
           'required': ['@context', '@id', '@type'],
@@ -292,6 +315,17 @@ class Cidme {
           'properties': {
             '@context': {
               '$ref': '#/definitions/@dataContext'
+            }
+          },
+          'required': ['@context'],
+          'additionalProperties': true
+        },
+        'GroupDataType': {
+          'title': 'RDF metadata to describe data contained in data resource.',
+          'type': 'object',
+          'properties': {
+            '@context': {
+              '$ref': '#/definitions/@groupDataTypeContext'
             }
           },
           'required': ['@context'],
@@ -568,11 +602,13 @@ class Cidme {
 
     let newOptions:Options = {}
     newOptions['createMetadata'] = false
-    newOptions['data'] = [
+    newOptions['groupDataType'] = [
       {
         '@context': this['jsonLdContext'],
         '@type': 'CreatedMetadata'
-      },
+      }
+    ]
+    newOptions['data'] = [
       {
         '@context': {
           '@vocab': 'http://purl.org/dc/terms/'
@@ -609,11 +645,13 @@ class Cidme {
 
     let newOptions:Options = {}
     newOptions['createMetadata'] = false
-    newOptions['data'] = [
+    newOptions['groupDataType'] = [
       {
         '@context': this['jsonLdContext'],
         '@type': 'LastModifiedMetadata'
-      },
+      }
+    ]
+    newOptions['data'] = [
       {
         '@context': {
           '@vocab': 'http://purl.org/dc/terms/'
@@ -727,6 +765,14 @@ class Cidme {
       '@id': this.getCidmeUri(parentIdObject['datastore'], 'MetadataGroup', idUuid)
     }
 
+    if (!options || !options['groupDataType']) {} else {
+      metadata['groupDataType'] = options['groupDataType']
+
+      if (!this.validate(metadata)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
+    }
+
     if (!options || !options['data']) {} else {
       metadata['data'] = options['data']
 
@@ -791,6 +837,14 @@ class Cidme {
       '@context': this['jsonLdContext'],
       '@type': 'EntityContextLinkGroup',
       '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid)
+    }
+
+    if (!options || !options['groupDataType']) {} else {
+      entityContextLink['groupDataType'] = options['groupDataType']
+
+      if (!this.validate(entityContextLink)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
     }
 
     if (!options || !options['data']) {} else {
@@ -1072,9 +1126,10 @@ class Cidme {
    * @param {string} resourceId - The @id of the resource to replace data.
    * @param {object} cidmeResource - CIDME resource to add to.
    * @param {object} data - The replacement JSON data.
+   * @param {object} [groupDataType] - The replacement JSON groupDataType.
    * @returns {object}
    */
-  replaceResourceData (resourceId:string, cidmeResource:CidmeResource, data:object):CidmeResource {
+  replaceResourceData (resourceId:string, cidmeResource:CidmeResource, data:object, groupDataType:object={}):CidmeResource {
     if (!resourceId || !cidmeResource || !data) {
       throw new Error('ERROR:  Missing or invalid argument.')
     }
@@ -1085,6 +1140,16 @@ class Cidme {
       }
 
       cidmeResource['data'] = data
+
+      if (groupDataType != {}) {
+        if (cidmeResource['@id'] === resourceId ) {
+          if (!cidmeResource.hasOwnProperty('groupDataType')) {
+             cidmeResource['groupDataType'] = []
+          }
+    
+          cidmeResource['groupDataType'] = groupDataType
+        }
+      }
     }
 
     if (cidmeResource.hasOwnProperty('metadata')) {

@@ -1,31 +1,30 @@
 {
-  "name": "cidme",
-  "version": "0.4.7",
-  "description": "Contextual IDentity Management Engine (CIDME)",
-  "scripts": {
-    "test": "cd test;jest cidme.test.js",
-    "build": "tsc --alwaysStrict --strict --noImplicitAny --noImplicitThis --noImplicitReturns --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --strictNullChecks --strictFunctionTypes --strictBindCallApply --strictPropertyInitialization --outDir dist src/*.ts",
-    "buildsimple": "tsc --outDir dist src/*.ts"
-  },
-  "author": {
-    "name": "Joe Thielen",
-    "email": "<joe@joethielen.com>",
-    "url": "https://github.com/joethielen"
-  },
-  "homepage": "http://cidme.net",
-  "license": "MIT",
-  "repository": "github:cidme/cidme-js",
-  "bugs": "https://github.com/cidme/CIDME-JS/issues",
-  "main": "dist/cidme.js",
-  "devDependencies": {
-    "ajv": "^6.0.0",
-    "jest": "^23.6.0",
-    "jsonld": "^1.5.1",
-    "typescript": "^3.2.2",
-    "uuidjs": "^4.0.3"
-  },
-  "dependencies": {
-  },
-  "directories.lib": "dist",
-  "directories.test": "test"
+    "name": "cidme",
+    "version": "0.5.0",
+    "description": "Contextual IDentity Management Engine (CIDME)",
+    "scripts": {
+        "test": "cd test;jest cidme.test.js",
+        "build": "tsc --alwaysStrict --strict --noImplicitAny --noImplicitThis --noImplicitReturns --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --strictNullChecks --strictFunctionTypes --strictBindCallApply --strictPropertyInitialization --outDir dist src/*.ts",
+        "buildsimple": "tsc --outDir dist src/*.ts"
+    },
+    "author": {
+        "name": "Joe Thielen",
+        "email": "<joe@joethielen.com>",
+        "url": "https://github.com/joethielen"
+    },
+    "homepage": "http://cidme.net",
+    "license": "MIT",
+    "repository": "github:cidme/cidme-js",
+    "bugs": "https://github.com/cidme/CIDME-JS/issues",
+    "main": "dist/cidme.js",
+    "devDependencies": {
+        "ajv": "^6.0.0",
+        "jest": "^23.6.0",
+        "jsonld": "^1.5.1",
+        "typescript": "^3.2.2",
+        "uuidjs": "^4.0.3"
+    },
+    "dependencies": {},
+    "directories.lib": "dist",
+    "directories.test": "test"
 }

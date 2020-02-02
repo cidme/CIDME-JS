@@ -1,16 +1,16 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
  */
 'use strict';
 /**
- * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.3.0.
+ * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.4.7
+ * @version 0.5.0
  */
 var Cidme = /** @class */ (function () {
     /**
@@ -29,7 +29,7 @@ var Cidme = /** @class */ (function () {
             typeof uuidGenerator !== 'function') {
             throw new Error('Missing required arguments.');
         }
-        this['cidmeVersion'] = '0.3.0';
+        this['cidmeVersion'] = '0.4.0';
         this['jsonSchemaValidator'] = jsonSchemaValidator;
         this['uuidGenerator'] = uuidGenerator;
         this['debug'] = debug;
@@ -54,6 +54,9 @@ var Cidme = /** @class */ (function () {
                     'format': 'uri'
                 },
                 '@dataContext': {
+                    'type': ['string', 'object']
+                },
+                '@groupDataTypeContext': {
                     'type': ['string', 'object']
                 },
                 'Entity': {
@@ -156,6 +159,12 @@ var Cidme = /** @class */ (function () {
                             'items': {
                                 '$ref': '#/definitions/Data'
                             }
+                        },
+                        'groupDataType': {
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/GroupDataType'
+                            }
                         }
                     },
                     'required': ['@context', '@id', '@type'],
@@ -186,6 +195,12 @@ var Cidme = /** @class */ (function () {
                             'type': 'array',
                             'items': {
                                 '$ref': '#/definitions/Data'
+                            }
+                        },
+                        'groupDataType': {
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/GroupDataType'
                             }
                         }
                     },
@@ -218,6 +233,12 @@ var Cidme = /** @class */ (function () {
                             'items': {
                                 '$ref': '#/definitions/Data'
                             }
+                        },
+                        'groupDataType': {
+                            'type': 'array',
+                            'items': {
+                                '$ref': '#/definitions/GroupDataType'
+                            }
                         }
                     },
                     'required': ['@context', '@id', '@type'],
@@ -229,6 +250,17 @@ var Cidme = /** @class */ (function () {
                     'properties': {
                         '@context': {
                             '$ref': '#/definitions/@dataContext'
+                        }
+                    },
+                    'required': ['@context'],
+                    'additionalProperties': true
+                },
+                'GroupDataType': {
+                    'title': 'RDF metadata to describe data contained in data resource.',
+                    'type': 'object',
+                    'properties': {
+                        '@context': {
+                            '$ref': '#/definitions/@groupDataTypeContext'
                         }
                     },
                     'required': ['@context'],
@@ -498,11 +530,13 @@ var Cidme = /** @class */ (function () {
         }
         var newOptions = {};
         newOptions['createMetadata'] = false;
-        newOptions['data'] = [
+        newOptions['groupDataType'] = [
             {
                 '@context': this['jsonLdContext'],
                 '@type': 'CreatedMetadata'
-            },
+            }
+        ];
+        newOptions['data'] = [
             {
                 '@context': {
                     '@vocab': 'http://purl.org/dc/terms/'
@@ -535,11 +569,13 @@ var Cidme = /** @class */ (function () {
         }
         var newOptions = {};
         newOptions['createMetadata'] = false;
-        newOptions['data'] = [
+        newOptions['groupDataType'] = [
             {
                 '@context': this['jsonLdContext'],
                 '@type': 'LastModifiedMetadata'
-            },
+            }
+        ];
+        newOptions['data'] = [
             {
                 '@context': {
                     '@vocab': 'http://purl.org/dc/terms/'
@@ -644,6 +680,13 @@ var Cidme = /** @class */ (function () {
             '@type': 'MetadataGroup',
             '@id': this.getCidmeUri(parentIdObject['datastore'], 'MetadataGroup', idUuid)
         };
+        if (!options || !options['groupDataType']) { }
+        else {
+            metadata['groupDataType'] = options['groupDataType'];
+            if (!this.validate(metadata)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
+        }
         if (!options || !options['data']) { }
         else {
             metadata['data'] = options['data'];
@@ -708,6 +751,13 @@ var Cidme = /** @class */ (function () {
             '@type': 'EntityContextLinkGroup',
             '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextLinkGroup', idUuid)
         };
+        if (!options || !options['groupDataType']) { }
+        else {
+            entityContextLink['groupDataType'] = options['groupDataType'];
+            if (!this.validate(entityContextLink)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
+        }
         if (!options || !options['data']) { }
         else {
             entityContextLink['data'] = options['data'];
@@ -955,9 +1005,11 @@ var Cidme = /** @class */ (function () {
      * @param {string} resourceId - The @id of the resource to replace data.
      * @param {object} cidmeResource - CIDME resource to add to.
      * @param {object} data - The replacement JSON data.
+     * @param {object} [groupDataType] - The replacement JSON groupDataType.
      * @returns {object}
      */
-    Cidme.prototype.replaceResourceData = function (resourceId, cidmeResource, data) {
+    Cidme.prototype.replaceResourceData = function (resourceId, cidmeResource, data, groupDataType) {
+        if (groupDataType === void 0) { groupDataType = {}; }
         if (!resourceId || !cidmeResource || !data) {
             throw new Error('ERROR:  Missing or invalid argument.');
         }
@@ -966,6 +1018,14 @@ var Cidme = /** @class */ (function () {
                 cidmeResource['data'] = [];
             }
             cidmeResource['data'] = data;
+            if (groupDataType != {}) {
+                if (cidmeResource['@id'] === resourceId) {
+                    if (!cidmeResource.hasOwnProperty('groupDataType')) {
+                        cidmeResource['groupDataType'] = [];
+                    }
+                    cidmeResource['groupDataType'] = groupDataType;
+                }
+            }
         }
         if (cidmeResource.hasOwnProperty('metadata')) {
             for (var i = 0; i < cidmeResource['metadata'].length; i++) {
