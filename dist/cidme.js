@@ -46,7 +46,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.5.1
+ * @version 0.6.0
  */
 var Cidme = /** @class */ (function () {
     /**

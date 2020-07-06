@@ -1,6 +1,6 @@
 {
     "name": "cidme",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "description": "Contextual IDentity Management Engine (CIDME)",
     "scripts": {
         "test": "cd test;jest cidme.test.js",
