@@ -1,4 +1,4 @@
-/**
+ /**
  * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
@@ -50,7 +50,7 @@ interface CidmeResource {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.5.0
+ * @version 0.5.1
  */
 class Cidme {
 
@@ -58,6 +58,13 @@ class Cidme {
 
   jsonSchemaValidator:any
   uuidGenerator:any
+
+  hasJsonld:boolean
+  jsonld:any
+
+  hasN3:boolean
+  N3:any
+  parserN3:any
 
   debug:boolean
 
@@ -72,14 +79,18 @@ class Cidme {
 
   resourceTypes:string[]
 
+  rdfType:string
+
   /**
      * CIDME class constructor
      * @constructor
      * @param {object} jsonSchemaValidator - An instance of an Ajv compatible JSON schema validator (https://ajv.js.org/)
      * @param {object} uuidGenerator - An instance of an LiosK/UUID.js compatible UUID generator (https://github.com/LiosK/UUID.js)
+     * @param {object} [jsonld] - An instance of an digitalbazaar/jsonld.js JSON-LD processor (https://github.com/digitalbazaar/jsonld.js)
+     * @param {object} [N3] - An instance of an rdfjs/N3.js JSON-LD processor (https://github.com/rdfjs/N3.js)
      * @param {boolean} [debug] - Set true to enable debugging
      */
-  constructor (jsonSchemaValidator:any, uuidGenerator:any, debug:boolean=false) {
+  constructor (jsonSchemaValidator:any, uuidGenerator:any, jsonld:any, N3:any, debug:boolean=false) {
     // Ensure we have required parameters
     if (
       !jsonSchemaValidator ||
@@ -90,10 +101,32 @@ class Cidme {
       throw new Error('Missing required arguments.')
     }
 
+    if (
+      !jsonld ||
+      typeof jsonld !== 'function'
+    ) {
+      this['hasJsonld'] = false
+    } else {
+      this['hasJsonld'] = true
+      this['jsonld'] = jsonld
+    }
+
+    if (
+      !N3 ||
+      typeof N3 !== 'object'
+    ) {
+      this['hasN3'] = false;
+    } else {
+      this['hasN3'] = true;
+      this['parserN3'] = new N3.Parser()
+    }
+
     this['cidmeVersion'] = '0.4.0'
 
     this['jsonSchemaValidator'] = jsonSchemaValidator
     this['uuidGenerator'] = uuidGenerator
+
+    this['rdfType'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
 
     this['debug'] = debug
 
@@ -730,8 +763,6 @@ class Cidme {
     return entityContext
   }
 
-
-
   /**
    * Returns a CIDME metadata resource.
    * @param {string} parentId - The @id from the parent resource.  This is used for the datastore ID from this is also used for the @id datastore value.
@@ -911,6 +942,14 @@ class Cidme {
       '@context': this['jsonLdContext'],
       '@type': 'EntityContextDataGroup',
       '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid)
+    }
+
+    if (!options || !options['groupDataType']) {} else {
+      entityContextData['groupDataType'] = options['groupDataType']
+
+      if (!this.validate(entityContextData)) {
+        throw new Error('ERROR:  An error occured while validating the new resource.')
+      }
     }
 
     if (!options || !options['data']) {} else {
@@ -1256,6 +1295,261 @@ class Cidme {
 
 
   /* ********************************************************************** */
+  // CIDME SQL FUNCTIONS
+
+  async getSqlJsonForResource (parentId:string|null = null, cidmeResource:CidmeResource, retSql:any = [], sqlDialect:string = 'sqlite'): Promise<any> {
+
+    // Make sure we have a valid CIDME resource
+    if (!this.validate(cidmeResource)) {
+      throw new Error('ERROR:  Invalid passed CIDME resource.')
+    }
+
+    if (cidmeResource['@type'] !== 'Entity' && parentId === null) {
+      throw new Error('ERROR:  Invalid passed parentId argument.')
+    }
+
+    let resourceIdParsed:CidmeUri = this.parseCidmeUri(cidmeResource['@id'])
+
+    let retSqlNewItem:any = {}
+
+    // @ts-ignore
+    //if (sqlDialect.toLowerCase === 'sqlite') {
+
+    // Get the SQL for the JSON-LD node itself
+    if (sqlDialect === 'sqlite') {
+      retSqlNewItem.sqlValues = {}
+      retSqlNewItem.sqlQueryType = 'REPLACE'
+      retSqlNewItem.sqlQuery = []
+      retSqlNewItem.sqlQuery[0] = {'type': 'text', 'text': 'REPLACE INTO nodes ('}
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'id'}
+      retSqlNewItem.sqlValues.id = resourceIdParsed['id']
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'id_datastore'}
+      retSqlNewItem.sqlValues.id_datastore = resourceIdParsed['datastore']
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'parent_id'}
+      if (parentId === null) {
+        retSqlNewItem.sqlValues.parent_id = null;
+      } else {
+        let parentIdParsed:CidmeUri = this.parseCidmeUri(parentId)
+        retSqlNewItem.sqlValues.parent_id = parentIdParsed['id']
+      }
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'context'}
+      retSqlNewItem.sqlValues.context = cidmeResource['@context']
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'type'}
+      retSqlNewItem.sqlValues.type = cidmeResource['@type']
+
+      if (
+        cidmeResource['@type'] === 'MetadataGroup' ||
+        cidmeResource['@type'] === 'EntityContextDataGroup' ||
+        cidmeResource['@type'] === 'EntityContextLinkGroup'
+      ) {
+        retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'groupDataType'}
+        if (
+          cidmeResource.hasOwnProperty('groupDataType')
+        ) {
+          retSqlNewItem.sqlValues.groupDataType = JSON.stringify(cidmeResource['groupDataType'])
+        } else {
+          retSqlNewItem.sqlValues.groupDataType = null;
+        }
+
+        retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'value', 'key': 'data'}
+        if (
+          cidmeResource.hasOwnProperty('data')
+        ) {
+          retSqlNewItem.sqlValues.data = JSON.stringify(cidmeResource['data'])
+        } else {
+          retSqlNewItem.sqlValues.data = null;
+        }
+      }
+
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'text', 'text': ') VALUES ('}
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'valuesPlaceholder'}
+      retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = {'type': 'text', 'text': ')'}
+
+      //console.log(retSqlNewItem)
+    }
+
+    retSql.push(retSqlNewItem)
+
+
+    // /*
+    // Get the SQL for the JSON-LD data in the groupDataType element, if applicable
+    if (
+      (
+        cidmeResource['@type'] === 'MetadataGroup' ||
+        cidmeResource['@type'] === 'EntityContextDataGroup' ||
+        cidmeResource['@type'] === 'EntityContextLinkGroup'
+      )
+      && cidmeResource.hasOwnProperty('groupDataType')
+    ) {
+      //console.log(JSON.stringify(cidmeResource))
+      // Reset our var to an empty object
+      retSqlNewItem = {}
+
+      let nQuads = null
+
+      try {
+        nQuads = await this.getResourceGroupDataTypeNQuads (cidmeResource, true)
+        // console.log(nQuads)
+      } catch (err) {
+        console.log(cidmeResource)
+        throw new Error('ERROR:  Error creating NQuad(s) from groupDataType.')
+      }
+
+      if (sqlDialect === 'sqlite') {
+        retSqlNewItem.sqlValues = {}
+        retSqlNewItem.sqlQueryType = 'INSERT'
+        retSqlNewItem.sqlQuery = []
+        retSqlNewItem.sqlQuery[0] = {'type': 'text', 'text': 'INSERT INTO data ('}
+        retSqlNewItem.sqlQuery[1] = {'type': 'value', 'key': 'id'}
+        retSqlNewItem.sqlValues.id = this['uuidGenerator'].genV4().hexString
+        retSqlNewItem.sqlQuery[2] = {'type': 'value', 'key': 'parent_id'}
+        retSqlNewItem.sqlValues.parent_id = resourceIdParsed['id']
+        retSqlNewItem.sqlQuery[3] = {'type': 'value', 'key': 'parent_field'}
+        retSqlNewItem.sqlValues.parent_field = 'groupDataType'
+
+        // DONE??? TODO TODO TODO
+        retSqlNewItem.sqlQuery[4] = {'type': 'value', 'key': 'predicate'}
+        retSqlNewItem.sqlValues.predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+
+        // DONE??? TODO TODO TODO
+        retSqlNewItem.sqlQuery[5] = {'type': 'value', 'key': 'object'}
+        retSqlNewItem.sqlValues.object = nQuads
+
+        // DONE??? TODO TODO TODO
+        retSqlNewItem.sqlQuery[6] = {'type': 'value', 'key': 'object_type'}
+        retSqlNewItem.sqlValues.object_type = 'IRI'
+
+        retSqlNewItem.sqlQuery[7] = {'type': 'text', 'text': ') VALUES ('}
+        retSqlNewItem.sqlQuery[8] = {'type': 'valuesPlaceholder'}
+        retSqlNewItem.sqlQuery[9] = {'type': 'text', 'text': ')'}
+      }
+
+      retSql.push(retSqlNewItem)
+    }
+    // */
+
+    // /*
+    // Get the SQL for the JSON-LD data in the data element, if applicable
+    if (
+      (
+        cidmeResource['@type'] === 'MetadataGroup' ||
+        cidmeResource['@type'] === 'EntityContextDataGroup' ||
+        cidmeResource['@type'] === 'EntityContextLinkGroup'
+      )
+      && cidmeResource.hasOwnProperty('data')
+    ) {
+      //console.log(JSON.stringify(cidmeResource))
+      // Reset our var to an empty object
+      
+
+      let nQuads = null
+
+      //console.log('-------')
+      try {
+        //console.log(cidmeResource['data'])
+        nQuads = await this.getResourceDataNQuads (cidmeResource, true)
+        //console.log(JSON.stringify(nQuads))
+        //console.log('-------')
+      } catch (err) {
+        console.log(err.message)
+        throw new Error('ERROR:  Error creating NQuad(s) from data.')
+      }
+
+      //throw new Error('TODO TODO TODO')
+
+      if (typeof nQuads === 'object' && nQuads.length > 0) {
+        for (var i = 0; i < nQuads.length; i++) {
+          retSqlNewItem = {}
+
+          //console.log(nQuads[i])
+
+          if (sqlDialect === 'sqlite') {
+            retSqlNewItem.sqlValues = {}
+            retSqlNewItem.sqlQueryType = 'INSERT'
+            retSqlNewItem.sqlQuery = []
+            retSqlNewItem.sqlQuery[0] = {'type': 'text', 'text': 'INSERT INTO data ('}
+            retSqlNewItem.sqlQuery[1] = {'type': 'value', 'key': 'id'}
+            retSqlNewItem.sqlValues.id = this['uuidGenerator'].genV4().hexString
+            retSqlNewItem.sqlQuery[2] = {'type': 'value', 'key': 'parent_id'}
+            retSqlNewItem.sqlValues.parent_id = resourceIdParsed['id']
+            retSqlNewItem.sqlQuery[3] = {'type': 'value', 'key': 'parent_field'}
+            retSqlNewItem.sqlValues.parent_field = 'data'
+
+            // TODO TODO TODO
+            retSqlNewItem.sqlQuery[4] = {'type': 'value', 'key': 'predicate'}
+            retSqlNewItem.sqlValues.predicate = nQuads[i].predicate.value
+
+            // TODO TODO TODO
+            retSqlNewItem.sqlQuery[5] = {'type': 'value', 'key': 'object'}
+            retSqlNewItem.sqlValues.object = nQuads[i].object.value
+
+            // TODO TODO TODO
+            retSqlNewItem.sqlQuery[6] = {'type': 'value', 'key': 'object_type'}
+            retSqlNewItem.sqlValues.object_type = nQuads[i].object.termType
+            //retSqlNewItem.sqlValues.object_type = 'Literal'
+
+            retSqlNewItem.sqlQuery[7] = {'type': 'text', 'text': ') VALUES ('}
+            retSqlNewItem.sqlQuery[8] = {'type': 'valuesPlaceholder'}
+            retSqlNewItem.sqlQuery[9] = {'type': 'text', 'text': ')'}
+          }
+
+          retSql.push(retSqlNewItem)
+        }
+      }
+    }
+    // */
+
+    if (cidmeResource.hasOwnProperty('metadata')) {
+      for (let i:number = 0; i < cidmeResource['metadata'].length; i++) {
+        try {
+          retSql = await this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['metadata'][i], retSql)
+        } catch (err) {
+          throw new Error('ERROR:  Error creating SQL JSON:  ' + err.message)
+        }
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContexts')) {
+      for (let i:number = 0; i < cidmeResource['entityContexts'].length; i++) {
+        try {
+          retSql = await this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContexts'][i], retSql)
+        } catch (err) {
+          throw new Error('ERROR:  Error creating SQL JSON:  ' + err.message)
+        }
+
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContextData')) {
+      for (let i:number = 0; i < cidmeResource['entityContextData'].length; i++) {
+        try {
+          retSql = await this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContextData'][i], retSql)
+        } catch (err) {
+          throw new Error('ERROR:  Error creating SQL JSON:  ' + err.message)
+        }
+
+      }
+    }
+
+    if (cidmeResource.hasOwnProperty('entityContextLinks')) {
+      for (let i:number = 0; i < cidmeResource['entityContextLinks'].length; i++) {
+        try {
+          retSql = await this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContextLinks'][i], retSql)
+        } catch (err) {
+          throw new Error('ERROR:  Error creating SQL JSON:  ' + err.message)
+        }
+      }
+    }
+
+
+    
+    return retSql;
+  }
+
+
+  /* ********************************************************************** */
+
+  /* ********************************************************************** */
   // HELPER FUNCTIONS
 
   /**
@@ -1457,6 +1751,118 @@ class Cidme {
     return false;
   }
 
+  /**
+   * THIS IS AN ASYNC FUNCTION!  Return the groupDataType of a given applicable resource in N-Quads format.  This function requires CIDME to have been instantiated with jsonld.  If getPredicate is set to true it also requires N3.
+   * @param {object} cidmeResource - CIDME resource to search through.
+   * @param {boolean} [getPredicate] - Set to true to return only the groupDataType predicate.  This requires CIDME to have been instantiated with N3.
+   * @returns {Promise}
+   */
+  async getResourceGroupDataTypeNQuads (cidmeResource:CidmeResource, getPredicate:any = false):Promise<any> {
+    if (!this['hasJsonld']) {
+      throw new Error('ERROR:  CIDME instantiated without jsonld.');
+    }
+
+    if (!getPredicate) {} else {
+      if (!this['hasN3']) {
+        throw new Error('ERROR:  CIDME instantiated without N3.');
+      }
+    }
+
+    if (!cidmeResource) {
+      throw new Error('ERROR:  Missing or invalid argument.')
+    }
+
+    // Make sure we have a valid CIDME resource
+    if (!this.validate(cidmeResource)) {
+      throw new Error('ERROR:  Invalid passed CIDME resource.')
+    }
+
+    if (
+      cidmeResource['@type'] !== 'MetadataGroup' &&
+      cidmeResource['@type'] !== 'EntityContextDataGroup' &&
+      cidmeResource['@type'] !== 'EntityContextLinkGroup'
+    ) {
+      throw new Error('ERROR:  CIDME resource is not a MetadataGroup, ContextDataGroup, or ContextLinkGroup.')
+    }
+
+    if (
+      !cidmeResource.hasOwnProperty('groupDataType')
+    ) {
+      return false;
+    }
+
+    let retVal = await this['jsonld'].toRDF(cidmeResource['groupDataType'], {format: 'application/n-quads'});
+
+    if (!getPredicate) {} else {
+      let retVal2 = false;
+
+      let data = this['parserN3'].parse(retVal)
+
+      if (typeof data === 'object' && data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].predicate.value === this['rdfType']) {
+            retVal = data[i].object.value
+            retVal2 = true
+          }
+        }
+      }
+
+      if (!retVal2) {retVal = false}
+    }
+
+    return retVal
+  }
+
+  /**
+   * THIS IS AN ASYNC FUNCTION!  Return the groupDataType of a given applicable resource in N-Quads format.  This function requires CIDME to have been instantiated with jsonld.  If getPredicate is set to true it also requires N3.
+   * @param {object} cidmeResource - CIDME resource to search through.
+   * @param {boolean} [parseN3] - Set to true to return data as pre-parsed N3.  This requires CIDME to have been instantiated with N3.
+   * @returns {Promise}
+   */
+  async getResourceDataNQuads (cidmeResource:CidmeResource, parseN3:boolean = false):Promise<any> {
+    if (!this['hasJsonld']) {
+      throw new Error('ERROR:  CIDME instantiated without jsonld.');
+    }
+
+    if (!parseN3) {} else {
+      if (!this['hasN3']) {
+        throw new Error('ERROR:  CIDME instantiated without N3.');
+      }
+    }
+
+    if (!cidmeResource) {
+      throw new Error('ERROR:  Missing or invalid argument.')
+    }
+
+    // Make sure we have a valid CIDME resource
+    if (!this.validate(cidmeResource)) {
+      throw new Error('ERROR:  Invalid passed CIDME resource.')
+    }
+
+    if (
+      cidmeResource['@type'] !== 'MetadataGroup' &&
+      cidmeResource['@type'] !== 'EntityContextDataGroup' &&
+      cidmeResource['@type'] !== 'EntityContextLinkGroup'
+    ) {
+      throw new Error('ERROR:  CIDME resource is not a MetadataGroup, ContextDataGroup, or ContextLinkGroup.')
+    }
+
+    if (
+      !cidmeResource.hasOwnProperty('data')
+    ) {
+      return false;
+    }
+
+    let retVal = await this['jsonld'].toRDF(cidmeResource['data'], {format: 'application/n-quads'});
+
+    if (!parseN3) {} else {
+      let data = this['parserN3'].parse(retVal)
+      if (!data) {retVal = false} else {retVal = data}
+    }
+
+    return retVal
+  }
+
   /* ********************************************************************** */
 
   
@@ -1524,6 +1930,7 @@ class Cidme {
       console.log(data)
     }
   }
+
   /* ********************************************************************** */
 }
 

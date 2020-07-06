@@ -1,16 +1,52 @@
 /**
- * @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
- * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018-2020
- * @license MIT
- */
+* @file Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
+* @author Joe Thielen <joe@joethielen.com>
+* @copyright Joe Thielen 2018-2020
+* @license MIT
+*/
 'use strict';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 /**
  * Implements CIDME specification core functionality.  Currently supports CIDME specification version 0.4.0.
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2020
  * @license MIT
- * @version 0.5.0
+ * @version 0.5.1
  */
 var Cidme = /** @class */ (function () {
     /**
@@ -18,9 +54,11 @@ var Cidme = /** @class */ (function () {
        * @constructor
        * @param {object} jsonSchemaValidator - An instance of an Ajv compatible JSON schema validator (https://ajv.js.org/)
        * @param {object} uuidGenerator - An instance of an LiosK/UUID.js compatible UUID generator (https://github.com/LiosK/UUID.js)
+       * @param {object} [jsonld] - An instance of an digitalbazaar/jsonld.js JSON-LD processor (https://github.com/digitalbazaar/jsonld.js)
+       * @param {object} [N3] - An instance of an rdfjs/N3.js JSON-LD processor (https://github.com/rdfjs/N3.js)
        * @param {boolean} [debug] - Set true to enable debugging
        */
-    function Cidme(jsonSchemaValidator, uuidGenerator, debug) {
+    function Cidme(jsonSchemaValidator, uuidGenerator, jsonld, N3, debug) {
         if (debug === void 0) { debug = false; }
         // Ensure we have required parameters
         if (!jsonSchemaValidator ||
@@ -29,9 +67,26 @@ var Cidme = /** @class */ (function () {
             typeof uuidGenerator !== 'function') {
             throw new Error('Missing required arguments.');
         }
+        if (!jsonld ||
+            typeof jsonld !== 'function') {
+            this['hasJsonld'] = false;
+        }
+        else {
+            this['hasJsonld'] = true;
+            this['jsonld'] = jsonld;
+        }
+        if (!N3 ||
+            typeof N3 !== 'object') {
+            this['hasN3'] = false;
+        }
+        else {
+            this['hasN3'] = true;
+            this['parserN3'] = new N3.Parser();
+        }
         this['cidmeVersion'] = '0.4.0';
         this['jsonSchemaValidator'] = jsonSchemaValidator;
         this['uuidGenerator'] = uuidGenerator;
+        this['rdfType'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
         this['debug'] = debug;
         /**
          * JSON schema for JSON-LD.  Taken from: http://json.schemastore.org/jsonld
@@ -822,6 +877,13 @@ var Cidme = /** @class */ (function () {
             '@type': 'EntityContextDataGroup',
             '@id': this.getCidmeUri(parentIdObject['datastore'], 'EntityContextDataGroup', idUuid)
         };
+        if (!options || !options['groupDataType']) { }
+        else {
+            entityContextData['groupDataType'] = options['groupDataType'];
+            if (!this.validate(entityContextData)) {
+                throw new Error('ERROR:  An error occured while validating the new resource.');
+            }
+        }
         if (!options || !options['data']) { }
         else {
             entityContextData['data'] = options['data'];
@@ -1114,6 +1176,260 @@ var Cidme = /** @class */ (function () {
     };
     /* ********************************************************************** */
     /* ********************************************************************** */
+    // CIDME SQL FUNCTIONS
+    Cidme.prototype.getSqlJsonForResource = function (parentId, cidmeResource, retSql, sqlDialect) {
+        if (parentId === void 0) { parentId = null; }
+        if (retSql === void 0) { retSql = []; }
+        if (sqlDialect === void 0) { sqlDialect = 'sqlite'; }
+        return __awaiter(this, void 0, void 0, function () {
+            var resourceIdParsed, retSqlNewItem, parentIdParsed, nQuads, err_1, nQuads, err_2, i, i_1, err_3, i_2, err_4, i_3, err_5, i_4, err_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        // Make sure we have a valid CIDME resource
+                        if (!this.validate(cidmeResource)) {
+                            throw new Error('ERROR:  Invalid passed CIDME resource.');
+                        }
+                        if (cidmeResource['@type'] !== 'Entity' && parentId === null) {
+                            throw new Error('ERROR:  Invalid passed parentId argument.');
+                        }
+                        resourceIdParsed = this.parseCidmeUri(cidmeResource['@id']);
+                        retSqlNewItem = {};
+                        // @ts-ignore
+                        //if (sqlDialect.toLowerCase === 'sqlite') {
+                        // Get the SQL for the JSON-LD node itself
+                        if (sqlDialect === 'sqlite') {
+                            retSqlNewItem.sqlValues = {};
+                            retSqlNewItem.sqlQueryType = 'REPLACE';
+                            retSqlNewItem.sqlQuery = [];
+                            retSqlNewItem.sqlQuery[0] = { 'type': 'text', 'text': 'REPLACE INTO nodes (' };
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'id' };
+                            retSqlNewItem.sqlValues.id = resourceIdParsed['id'];
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'id_datastore' };
+                            retSqlNewItem.sqlValues.id_datastore = resourceIdParsed['datastore'];
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'parent_id' };
+                            if (parentId === null) {
+                                retSqlNewItem.sqlValues.parent_id = null;
+                            }
+                            else {
+                                parentIdParsed = this.parseCidmeUri(parentId);
+                                retSqlNewItem.sqlValues.parent_id = parentIdParsed['id'];
+                            }
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'context' };
+                            retSqlNewItem.sqlValues.context = cidmeResource['@context'];
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'type' };
+                            retSqlNewItem.sqlValues.type = cidmeResource['@type'];
+                            if (cidmeResource['@type'] === 'MetadataGroup' ||
+                                cidmeResource['@type'] === 'EntityContextDataGroup' ||
+                                cidmeResource['@type'] === 'EntityContextLinkGroup') {
+                                retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'groupDataType' };
+                                if (cidmeResource.hasOwnProperty('groupDataType')) {
+                                    retSqlNewItem.sqlValues.groupDataType = JSON.stringify(cidmeResource['groupDataType']);
+                                }
+                                else {
+                                    retSqlNewItem.sqlValues.groupDataType = null;
+                                }
+                                retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'value', 'key': 'data' };
+                                if (cidmeResource.hasOwnProperty('data')) {
+                                    retSqlNewItem.sqlValues.data = JSON.stringify(cidmeResource['data']);
+                                }
+                                else {
+                                    retSqlNewItem.sqlValues.data = null;
+                                }
+                            }
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'text', 'text': ') VALUES (' };
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'valuesPlaceholder' };
+                            retSqlNewItem.sqlQuery[retSqlNewItem.sqlQuery.length] = { 'type': 'text', 'text': ')' };
+                            //console.log(retSqlNewItem)
+                        }
+                        retSql.push(retSqlNewItem);
+                        if (!((cidmeResource['@type'] === 'MetadataGroup' ||
+                            cidmeResource['@type'] === 'EntityContextDataGroup' ||
+                            cidmeResource['@type'] === 'EntityContextLinkGroup')
+                            && cidmeResource.hasOwnProperty('groupDataType'))) return [3 /*break*/, 5];
+                        //console.log(JSON.stringify(cidmeResource))
+                        // Reset our var to an empty object
+                        retSqlNewItem = {};
+                        nQuads = null;
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.getResourceGroupDataTypeNQuads(cidmeResource, true)
+                            // console.log(nQuads)
+                        ];
+                    case 2:
+                        nQuads = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.log(cidmeResource);
+                        throw new Error('ERROR:  Error creating NQuad(s) from groupDataType.');
+                    case 4:
+                        if (sqlDialect === 'sqlite') {
+                            retSqlNewItem.sqlValues = {};
+                            retSqlNewItem.sqlQueryType = 'INSERT';
+                            retSqlNewItem.sqlQuery = [];
+                            retSqlNewItem.sqlQuery[0] = { 'type': 'text', 'text': 'INSERT INTO data (' };
+                            retSqlNewItem.sqlQuery[1] = { 'type': 'value', 'key': 'id' };
+                            retSqlNewItem.sqlValues.id = this['uuidGenerator'].genV4().hexString;
+                            retSqlNewItem.sqlQuery[2] = { 'type': 'value', 'key': 'parent_id' };
+                            retSqlNewItem.sqlValues.parent_id = resourceIdParsed['id'];
+                            retSqlNewItem.sqlQuery[3] = { 'type': 'value', 'key': 'parent_field' };
+                            retSqlNewItem.sqlValues.parent_field = 'groupDataType';
+                            // DONE??? TODO TODO TODO
+                            retSqlNewItem.sqlQuery[4] = { 'type': 'value', 'key': 'predicate' };
+                            retSqlNewItem.sqlValues.predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+                            // DONE??? TODO TODO TODO
+                            retSqlNewItem.sqlQuery[5] = { 'type': 'value', 'key': 'object' };
+                            retSqlNewItem.sqlValues.object = nQuads;
+                            // DONE??? TODO TODO TODO
+                            retSqlNewItem.sqlQuery[6] = { 'type': 'value', 'key': 'object_type' };
+                            retSqlNewItem.sqlValues.object_type = 'IRI';
+                            retSqlNewItem.sqlQuery[7] = { 'type': 'text', 'text': ') VALUES (' };
+                            retSqlNewItem.sqlQuery[8] = { 'type': 'valuesPlaceholder' };
+                            retSqlNewItem.sqlQuery[9] = { 'type': 'text', 'text': ')' };
+                        }
+                        retSql.push(retSqlNewItem);
+                        _a.label = 5;
+                    case 5:
+                        if (!((cidmeResource['@type'] === 'MetadataGroup' ||
+                            cidmeResource['@type'] === 'EntityContextDataGroup' ||
+                            cidmeResource['@type'] === 'EntityContextLinkGroup')
+                            && cidmeResource.hasOwnProperty('data'))) return [3 /*break*/, 10];
+                        nQuads = null;
+                        _a.label = 6;
+                    case 6:
+                        _a.trys.push([6, 8, , 9]);
+                        return [4 /*yield*/, this.getResourceDataNQuads(cidmeResource, true)
+                            //console.log(JSON.stringify(nQuads))
+                            //console.log('-------')
+                        ];
+                    case 7:
+                        //console.log(cidmeResource['data'])
+                        nQuads = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 8:
+                        err_2 = _a.sent();
+                        console.log(err_2.message);
+                        throw new Error('ERROR:  Error creating NQuad(s) from data.');
+                    case 9:
+                        //throw new Error('TODO TODO TODO')
+                        if (typeof nQuads === 'object' && nQuads.length > 0) {
+                            for (i = 0; i < nQuads.length; i++) {
+                                retSqlNewItem = {};
+                                //console.log(nQuads[i])
+                                if (sqlDialect === 'sqlite') {
+                                    retSqlNewItem.sqlValues = {};
+                                    retSqlNewItem.sqlQueryType = 'INSERT';
+                                    retSqlNewItem.sqlQuery = [];
+                                    retSqlNewItem.sqlQuery[0] = { 'type': 'text', 'text': 'INSERT INTO data (' };
+                                    retSqlNewItem.sqlQuery[1] = { 'type': 'value', 'key': 'id' };
+                                    retSqlNewItem.sqlValues.id = this['uuidGenerator'].genV4().hexString;
+                                    retSqlNewItem.sqlQuery[2] = { 'type': 'value', 'key': 'parent_id' };
+                                    retSqlNewItem.sqlValues.parent_id = resourceIdParsed['id'];
+                                    retSqlNewItem.sqlQuery[3] = { 'type': 'value', 'key': 'parent_field' };
+                                    retSqlNewItem.sqlValues.parent_field = 'data';
+                                    // TODO TODO TODO
+                                    retSqlNewItem.sqlQuery[4] = { 'type': 'value', 'key': 'predicate' };
+                                    retSqlNewItem.sqlValues.predicate = nQuads[i].predicate.value;
+                                    // TODO TODO TODO
+                                    retSqlNewItem.sqlQuery[5] = { 'type': 'value', 'key': 'object' };
+                                    retSqlNewItem.sqlValues.object = nQuads[i].object.value;
+                                    // TODO TODO TODO
+                                    retSqlNewItem.sqlQuery[6] = { 'type': 'value', 'key': 'object_type' };
+                                    retSqlNewItem.sqlValues.object_type = nQuads[i].object.termType;
+                                    //retSqlNewItem.sqlValues.object_type = 'Literal'
+                                    retSqlNewItem.sqlQuery[7] = { 'type': 'text', 'text': ') VALUES (' };
+                                    retSqlNewItem.sqlQuery[8] = { 'type': 'valuesPlaceholder' };
+                                    retSqlNewItem.sqlQuery[9] = { 'type': 'text', 'text': ')' };
+                                }
+                                retSql.push(retSqlNewItem);
+                            }
+                        }
+                        _a.label = 10;
+                    case 10:
+                        if (!cidmeResource.hasOwnProperty('metadata')) return [3 /*break*/, 16];
+                        i_1 = 0;
+                        _a.label = 11;
+                    case 11:
+                        if (!(i_1 < cidmeResource['metadata'].length)) return [3 /*break*/, 16];
+                        _a.label = 12;
+                    case 12:
+                        _a.trys.push([12, 14, , 15]);
+                        return [4 /*yield*/, this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['metadata'][i_1], retSql)];
+                    case 13:
+                        retSql = _a.sent();
+                        return [3 /*break*/, 15];
+                    case 14:
+                        err_3 = _a.sent();
+                        throw new Error('ERROR:  Error creating SQL JSON:  ' + err_3.message);
+                    case 15:
+                        i_1++;
+                        return [3 /*break*/, 11];
+                    case 16:
+                        if (!cidmeResource.hasOwnProperty('entityContexts')) return [3 /*break*/, 22];
+                        i_2 = 0;
+                        _a.label = 17;
+                    case 17:
+                        if (!(i_2 < cidmeResource['entityContexts'].length)) return [3 /*break*/, 22];
+                        _a.label = 18;
+                    case 18:
+                        _a.trys.push([18, 20, , 21]);
+                        return [4 /*yield*/, this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContexts'][i_2], retSql)];
+                    case 19:
+                        retSql = _a.sent();
+                        return [3 /*break*/, 21];
+                    case 20:
+                        err_4 = _a.sent();
+                        throw new Error('ERROR:  Error creating SQL JSON:  ' + err_4.message);
+                    case 21:
+                        i_2++;
+                        return [3 /*break*/, 17];
+                    case 22:
+                        if (!cidmeResource.hasOwnProperty('entityContextData')) return [3 /*break*/, 28];
+                        i_3 = 0;
+                        _a.label = 23;
+                    case 23:
+                        if (!(i_3 < cidmeResource['entityContextData'].length)) return [3 /*break*/, 28];
+                        _a.label = 24;
+                    case 24:
+                        _a.trys.push([24, 26, , 27]);
+                        return [4 /*yield*/, this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContextData'][i_3], retSql)];
+                    case 25:
+                        retSql = _a.sent();
+                        return [3 /*break*/, 27];
+                    case 26:
+                        err_5 = _a.sent();
+                        throw new Error('ERROR:  Error creating SQL JSON:  ' + err_5.message);
+                    case 27:
+                        i_3++;
+                        return [3 /*break*/, 23];
+                    case 28:
+                        if (!cidmeResource.hasOwnProperty('entityContextLinks')) return [3 /*break*/, 34];
+                        i_4 = 0;
+                        _a.label = 29;
+                    case 29:
+                        if (!(i_4 < cidmeResource['entityContextLinks'].length)) return [3 /*break*/, 34];
+                        _a.label = 30;
+                    case 30:
+                        _a.trys.push([30, 32, , 33]);
+                        return [4 /*yield*/, this.getSqlJsonForResource(cidmeResource['@id'], cidmeResource['entityContextLinks'][i_4], retSql)];
+                    case 31:
+                        retSql = _a.sent();
+                        return [3 /*break*/, 33];
+                    case 32:
+                        err_6 = _a.sent();
+                        throw new Error('ERROR:  Error creating SQL JSON:  ' + err_6.message);
+                    case 33:
+                        i_4++;
+                        return [3 /*break*/, 29];
+                    case 34: return [2 /*return*/, retSql];
+                }
+            });
+        });
+    };
+    /* ********************************************************************** */
+    /* ********************************************************************** */
     // HELPER FUNCTIONS
     /**
      * Return a portion (or all) of a cidmeResource based on the requested resourceId.
@@ -1288,6 +1604,122 @@ var Cidme = /** @class */ (function () {
             }
         }
         return false;
+    };
+    /**
+     * THIS IS AN ASYNC FUNCTION!  Return the groupDataType of a given applicable resource in N-Quads format.  This function requires CIDME to have been instantiated with jsonld.  If getPredicate is set to true it also requires N3.
+     * @param {object} cidmeResource - CIDME resource to search through.
+     * @param {boolean} [getPredicate] - Set to true to return only the groupDataType predicate.  This requires CIDME to have been instantiated with N3.
+     * @returns {Promise}
+     */
+    Cidme.prototype.getResourceGroupDataTypeNQuads = function (cidmeResource, getPredicate) {
+        if (getPredicate === void 0) { getPredicate = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var retVal, retVal2, data, i;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this['hasJsonld']) {
+                            throw new Error('ERROR:  CIDME instantiated without jsonld.');
+                        }
+                        if (!getPredicate) { }
+                        else {
+                            if (!this['hasN3']) {
+                                throw new Error('ERROR:  CIDME instantiated without N3.');
+                            }
+                        }
+                        if (!cidmeResource) {
+                            throw new Error('ERROR:  Missing or invalid argument.');
+                        }
+                        // Make sure we have a valid CIDME resource
+                        if (!this.validate(cidmeResource)) {
+                            throw new Error('ERROR:  Invalid passed CIDME resource.');
+                        }
+                        if (cidmeResource['@type'] !== 'MetadataGroup' &&
+                            cidmeResource['@type'] !== 'EntityContextDataGroup' &&
+                            cidmeResource['@type'] !== 'EntityContextLinkGroup') {
+                            throw new Error('ERROR:  CIDME resource is not a MetadataGroup, ContextDataGroup, or ContextLinkGroup.');
+                        }
+                        if (!cidmeResource.hasOwnProperty('groupDataType')) {
+                            return [2 /*return*/, false];
+                        }
+                        return [4 /*yield*/, this['jsonld'].toRDF(cidmeResource['groupDataType'], { format: 'application/n-quads' })];
+                    case 1:
+                        retVal = _a.sent();
+                        if (!getPredicate) { }
+                        else {
+                            retVal2 = false;
+                            data = this['parserN3'].parse(retVal);
+                            if (typeof data === 'object' && data.length > 0) {
+                                for (i = 0; i < data.length; i++) {
+                                    if (data[i].predicate.value === this['rdfType']) {
+                                        retVal = data[i].object.value;
+                                        retVal2 = true;
+                                    }
+                                }
+                            }
+                            if (!retVal2) {
+                                retVal = false;
+                            }
+                        }
+                        return [2 /*return*/, retVal];
+                }
+            });
+        });
+    };
+    /**
+     * THIS IS AN ASYNC FUNCTION!  Return the groupDataType of a given applicable resource in N-Quads format.  This function requires CIDME to have been instantiated with jsonld.  If getPredicate is set to true it also requires N3.
+     * @param {object} cidmeResource - CIDME resource to search through.
+     * @param {boolean} [parseN3] - Set to true to return data as pre-parsed N3.  This requires CIDME to have been instantiated with N3.
+     * @returns {Promise}
+     */
+    Cidme.prototype.getResourceDataNQuads = function (cidmeResource, parseN3) {
+        if (parseN3 === void 0) { parseN3 = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var retVal, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this['hasJsonld']) {
+                            throw new Error('ERROR:  CIDME instantiated without jsonld.');
+                        }
+                        if (!parseN3) { }
+                        else {
+                            if (!this['hasN3']) {
+                                throw new Error('ERROR:  CIDME instantiated without N3.');
+                            }
+                        }
+                        if (!cidmeResource) {
+                            throw new Error('ERROR:  Missing or invalid argument.');
+                        }
+                        // Make sure we have a valid CIDME resource
+                        if (!this.validate(cidmeResource)) {
+                            throw new Error('ERROR:  Invalid passed CIDME resource.');
+                        }
+                        if (cidmeResource['@type'] !== 'MetadataGroup' &&
+                            cidmeResource['@type'] !== 'EntityContextDataGroup' &&
+                            cidmeResource['@type'] !== 'EntityContextLinkGroup') {
+                            throw new Error('ERROR:  CIDME resource is not a MetadataGroup, ContextDataGroup, or ContextLinkGroup.');
+                        }
+                        if (!cidmeResource.hasOwnProperty('data')) {
+                            return [2 /*return*/, false];
+                        }
+                        return [4 /*yield*/, this['jsonld'].toRDF(cidmeResource['data'], { format: 'application/n-quads' })];
+                    case 1:
+                        retVal = _a.sent();
+                        if (!parseN3) { }
+                        else {
+                            data = this['parserN3'].parse(retVal);
+                            if (!data) {
+                                retVal = false;
+                            }
+                            else {
+                                retVal = data;
+                            }
+                        }
+                        return [2 /*return*/, retVal];
+                }
+            });
+        });
     };
     /* ********************************************************************** */
     /* ********************************************************************** */

@@ -1,10 +1,10 @@
 {
     "name": "cidme",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Contextual IDentity Management Engine (CIDME)",
     "scripts": {
         "test": "cd test;jest cidme.test.js",
-        "build": "tsc --alwaysStrict --strict --noImplicitAny --noImplicitThis --noImplicitReturns --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --strictNullChecks --strictFunctionTypes --strictBindCallApply --strictPropertyInitialization --outDir dist src/*.ts",
+        "build": "tsc --alwaysStrict --strict --lib 'DOM,ES2015' --noImplicitAny --noImplicitThis --noImplicitReturns --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --strictNullChecks --strictFunctionTypes --strictBindCallApply --strictPropertyInitialization --outDir dist src/*.ts",
         "buildsimple": "tsc --outDir dist src/*.ts"
     },
     "author": {
@@ -18,11 +18,12 @@
     "bugs": "https://github.com/cidme/CIDME-JS/issues",
     "main": "dist/cidme.js",
     "devDependencies": {
-        "ajv": "^6.0.0",
+        "ajv": "^6.11.0",
         "jest": "^23.6.0",
-        "jsonld": "^1.5.1",
-        "typescript": "^3.2.2",
-        "uuidjs": "^4.0.3"
+        "jsonld": "^1.8.1",
+        "typescript": "^3.7.5",
+        "uuidjs": "^4.2.4",
+        "n3": "^1.3.5"
     },
     "dependencies": {},
     "directories.lib": "dist",
