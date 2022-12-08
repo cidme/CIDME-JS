@@ -5,6 +5,7 @@
 /node_modules
 package-lock.json
 cidme.js.code-workspace
+CIDME-JS.code-workspace
 *.swp
 /src/*.swp
 /dist/*.swp
