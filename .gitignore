@@ -9,3 +9,7 @@ cidme.js.code-workspace
 /src/*.swp
 /dist/*.swp
 /test/*.swp
+/test/*.old??
+/dist/*.old??
+/src/*.old??
+/*.old??
