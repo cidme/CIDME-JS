@@ -1,13 +1,13 @@
 /**
  * @file Jest JS unit tests for CIDME core.
  * @author Joe Thielen <joe@joethielen.com>
- * @copyright Joe Thielen 2018-2020
+ * @copyright Joe Thielen 2018-2023
  * @license MIT
  */
 
 'use strict'
 
-// These are for by Jest, but throw errors in StandardJS
+// These are for Jest, but throw errors in StandardJS
 /* global expect, test */
 
 /* ************************************************************************** */
@@ -30,42 +30,311 @@ const UUID = require('uuidjs')
 /* ************************************************************************** */
 
 
-/* ************************************************************************** */
-// Init jsonld.js
-
-const jsonld = require('jsonld')
-
-/* ************************************************************************** */
-
-
-/* ************************************************************************** */
-// Init N3.js
-
-const N3 = require('n3')
-
-/* ************************************************************************** */
-
-
-let creatorId = 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
+let creatorId = 'cidme://Entity/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
 let cidmeUrl = 'http://cidme.net/vocab/'
-    // let cidmeUrlCore = cidmeUrl + '/core'
-    // let cidmeUrlExt = cidmeUrl + '/ext'
+let cidmeUrlCore = cidmeUrl + 'core/0.6.0/'
+let cidmeUrlExt = cidmeUrl + 'ext/0.1.0/'
+let rdfUrl = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+let skosUrl = 'http://www.w3.org/2004/02/skos/core#'
 
 /* ************************************************************************** */
+
+
+function createCidmeExampleResourceEntity() {
+    let options = []
+
+    /* ---------- */
+    // Entity
+    let resource = cidme.createEntityResource()
+
+    // Entity MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('CIDME Example Resource Entity V0.6.0')
+    let resourceEntityMetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['@id'], resource, resourceEntityMetaData1, 'cidme:metaDataGroups')
+
+    // Entity MetaData #2
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createThingEntityTypeMetaData()
+    let resourceEntityMetaData2 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['@id'], resource, resourceEntityMetaData2, 'cidme:metaDataGroups')
+
+    /* ---------- */
+
+    // Entity Context #1 (default)
+    let resourceEntityContext1 = cidme.createEntityContextResource()
+    resource = cidme.addResourceToParent(resource['@id'], resource, resourceEntityContext1)
+
+    // Entity Context #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1 (Default)')
+    let resourceEntityContext1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1 MetaData #2
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createDefaultMetaData()
+    let resourceEntityContext1MetaData2 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1MetaData2, 'cidme:metaDataGroups')
+
+    // Entity Context #1 Entity Context Data #1
+    options = []
+    options['data'] = createLabelEntityContextData('Entity Context #1 Entity Context Data #1')
+    let resourceEntityContext1EntityContextData1 = cidme.createEntityContextDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1EntityContextData1, 'cidme:entityContextDataGroups')
+
+    // Entity Context #1 Entity Context Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1 Entity Context Data #1')
+    let resourceEntityContext1EntityContextData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], resource, resourceEntityContext1EntityContextData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1 Entity Context Data #2
+    options = []
+    options['data'] = createLabelEntityContextData('Entity Context #1 Entity Context Data #2')
+    let resourceEntityContext1EntityContextData2 = cidme.createEntityContextDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1EntityContextData2, 'cidme:entityContextDataGroups')
+
+    // Entity Context #1 Entity Context Data #2 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1 Entity Context Data #1')
+    let resourceEntityContext1EntityContextData2MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][1]['@id'], resource, resourceEntityContext1EntityContextData2MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1 Entity Context Link Data #1
+    options = []
+    options['data'] = createLabelEntityContextLinkData('Entity Context #1 Entity Context Link Data #1')
+    let resourceEntityContext1EntityContextLinkData1 = cidme.createEntityContextLinkDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1EntityContextLinkData1, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #1 Entity Context Link Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1 Entity Context Link Data #1')
+    let resourceEntityContext1EntityContextLinkData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, resourceEntityContext1EntityContextLinkData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1 Entity Context Link Data #2
+    options = []
+    options['data'] = createLabelEntityContextLinkData('Entity Context #1 Entity Context Data #2')
+    let resourceEntityContext1EntityContextLinkData2 = cidme.createEntityContextLinkDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1EntityContextLinkData2, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #1 Entity Context Link Data #2 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1 Entity Context Link Data #2')
+    let resourceEntityContext1EntityContextLinkData2MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][1]['@id'], resource, resourceEntityContext1EntityContextLinkData2MetaData1, 'cidme:metaDataGroups')
+
+    /* ---------- */
+
+
+    // Entity Context #1a
+    let resourceEntityContext1a = cidme.createEntityContextResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1a)
+
+    // Entity Context #1a MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1a')
+    let resourceEntityContext1aMetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1aMetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1a Entity Context Data #1
+    options = []
+    options['data'] = createLabelEntityContextData('Entity Context #1a Entity Context Data #1')
+    let resourceEntityContext1aEntityContextData1 = cidme.createEntityContextDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1aEntityContextData1, 'cidme:entityContextDataGroups')
+
+    // Entity Context #1a Entity Context Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1a Entity Context Data #1')
+    let resourceEntityContext1aEntityContextData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], resource, resourceEntityContext1aEntityContextData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1a Entity Context Data #2
+    options = []
+    options['data'] = createLabelEntityContextData('Entity Context #1a Entity Context Data #2')
+    let resourceEntityContext1aEntityContextData2 = cidme.createEntityContextDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1aEntityContextData2, 'cidme:entityContextDataGroups')
+
+    // Entity Context #1a Entity Context Data #2 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1a Entity Context Data #2')
+    let resourceEntityContext1aEntityContextData2MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][1]['@id'], resource, resourceEntityContext1aEntityContextData2MetaData1, 'cidme:metaDataGroups')
+
+
+    // Entity Context #1a Entity Context Link Data #1
+    options = []
+    options['data'] = createLabelEntityContextLinkData('Entity Context #1a Entity Context Link Data #1')
+    let resourceEntityContext1aEntityContextLinkData1 = cidme.createEntityContextLinkDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1aEntityContextLinkData1, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #1a Entity Context Link Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1a Entity Context Link Data #1')
+    let resourceEntityContext1aEntityContextLinkData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, resourceEntityContext1aEntityContextLinkData1MetaData1, 'cidme:metaDataGroups')
+
+
+    // Entity Context #1a Entity Context Link Data #2
+    options = []
+    options['data'] = createLabelEntityContextLinkData('Entity Context #1a Entity Context Link Data #2')
+    let resourceEntityContext1aEntityContextLinkData2 = cidme.createEntityContextLinkDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1aEntityContextLinkData2, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #1a Entity Context Link Data #2 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1a Entity Context Link Data #2')
+    let resourceEntityContext1aEntityContextLinkData2MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][1]['@id'], resource, resourceEntityContext1aEntityContextLinkData2MetaData1, 'cidme:metaDataGroups')
+
+
+    /* ---------- */
+
+    // Entity Context #1b
+    let resourceEntityContext1b = cidme.createEntityContextResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, resourceEntityContext1b)
+
+    // Entity Context #1b MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1b')
+    let resourceEntityContext1bMetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext1bMetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1b Entity Context Data #1
+    options = []
+    options['data'] = createLabelEntityContextData('Entity Context #1b Entity Context Data #1')
+    let resourceEntityContext1bEntityContextData1 = cidme.createEntityContextDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext1bEntityContextData1, 'cidme:entityContextDataGroups')
+
+    // Entity Context #1b Entity Context Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1b Entity Context Data #1')
+    let resourceEntityContext1bEntityContextData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][1]['cidme:entityContextDataGroups'][0]['@id'], resource, resourceEntityContext1bEntityContextData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #1b Entity Context Link Data #1
+    options = []
+    options['data'] = createLabelEntityContextLinkData('Entity Context #1b Entity Context Data #1')
+    let resourceEntityContext1bEntityContextLinkData1 = cidme.createEntityContextLinkDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext1bEntityContextLinkData1, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #1b Entity Context Link Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #1b Entity Context Link Data #1')
+    let resourceEntityContext1bEntityContextLinkData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContexts'][1]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, resourceEntityContext1bEntityContextLinkData1MetaData1, 'cidme:metaDataGroups')
+
+    /* ---------- */
+
+    // Entity Context #2
+    let resourceEntityContext2 = cidme.createEntityContextResource()
+    resource = cidme.addResourceToParent(resource['@id'], resource, resourceEntityContext2)
+
+    // Entity Context #2 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #2')
+    let resourceEntityContext2MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext2MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #2 Entity Context Data #1
+    let resourceEntityContext2EntityContextData1 = cidme.createEntityContextDataGroupResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext2EntityContextData1, 'cidme:entityContextDataGroups')
+
+    // Entity Context #2 Entity Context Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #2 Entity Context Data #1')
+    let resourceEntityContext2EntityContextData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][1]['cidme:entityContextDataGroups'][0]['@id'], resource, resourceEntityContext2EntityContextData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #2 Entity Context Link Data #1
+    let resourceEntityContext2EntityContextLinkData1 = cidme.createEntityContextLinkDataGroupResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][1]['@id'], resource, resourceEntityContext2EntityContextLinkData1, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #2 Entity Context Link Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #2 Entity Context Link Data #1')
+    let resourceEntityContext2EntityContextLinkData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][1]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, resourceEntityContext2EntityContextLinkData1MetaData1, 'cidme:metaDataGroups')
+
+
+    /* ---------- */
+
+    // Entity Context #3
+    let resourceEntityContext3 = cidme.createEntityContextResource()
+    resource = cidme.addResourceToParent(resource['@id'], resource, resourceEntityContext3)
+
+    // Entity Context #3 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #3')
+    let resourceEntityContext3MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][2]['@id'], resource, resourceEntityContext3MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #3 Entity Context Data #1
+    let resourceEntityContext3EntityContextData1 = cidme.createEntityContextDataGroupResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][2]['@id'], resource, resourceEntityContext3EntityContextData1, 'cidme:entityContextDataGroups')
+
+    // Entity Context #3 Entity Context Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #3 Entity Context Data #1')
+    let resourceEntityContext3EntityContextData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][2]['cidme:entityContextDataGroups'][0]['@id'], resource, resourceEntityContext3EntityContextData1MetaData1, 'cidme:metaDataGroups')
+
+    // Entity Context #3 Entity Context Link Data #1
+    let resourceEntityContext3EntityContextLinkData1 = cidme.createEntityContextLinkDataGroupResource()
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][2]['@id'], resource, resourceEntityContext3EntityContextLinkData1, 'cidme:entityContextLinkDataGroups')
+
+    // Entity Context #3 Entity Context Link Data #1 MetaData #1
+    options = []
+    options['createMetaData'] = false
+    options['data'] = createLabelMetaData('Entity Context #3 Entity Context Link Data #1')
+    let resourceEntityContext3EntityContextLinkData1MetaData1 = cidme.createMetaDataGroupResource(options)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][2]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, resourceEntityContext3EntityContextLinkData1MetaData1, 'cidme:metaDataGroups')
+
+    /* ---------- */
+
+    //console.log(JSON.stringify(resource))
+
+    return resource
+}
+
 function validateEntityResource(resource, options) {
     if (!options) { options = [] };
     if (!options.creatorId) { options.creatorId = null }
 
     expect(typeof resource).toBe('object')
-    expect(typeof resource['@context']).toBe('string')
+    expect(typeof resource['@context']).toBe('object')
+    expect(resource['@context']['cidme'].substring(0, cidmeUrlCore.length)).toBe(cidmeUrlCore)
+    expect(resource['@context']['cidme'].substring(resource['@context']['cidme'].length - 1)).toBe('/')
+    expect(resource['@context']['rdf']).toBe(rdfUrl)
     expect(typeof resource['@type']).toBe('string')
-    expect(resource['@type']).toBe('Entity')
+    expect(resource['@type']).toBe('cidme:Entity')
     expect(typeof resource['@id']).toBe('string')
-    expect(typeof resource['@reverse']).toBe('undefined')
 
-    if (!options || options.createMetadata !== false) {
-        expect(validateCreatedMetadata(resource.metadata[0], options)).toBe(true)
-        expect(validateLastModifiedMetadata(resource.metadata[1], options)).toBe(true)
+    if (!options || options.createMetaData !== false) {
+        expect(validateCreatedMetaData(resource['cidme:metaDataGroups'][0], options)).toBe(true)
+        expect(validateLastModifiedMetaData(resource['cidme:metaDataGroups'][1], options)).toBe(true)
     }
 
     return true
@@ -73,14 +342,17 @@ function validateEntityResource(resource, options) {
 
 function validateEntityContextResource(resource, options) {
     expect(typeof resource).toBe('object')
-    expect(typeof resource['@context']).toBe('string')
+    expect(typeof resource['@context']).toBe('object')
+    expect(resource['@context']['cidme'].substring(0, cidmeUrlCore.length)).toBe(cidmeUrlCore)
+    expect(resource['@context']['cidme'].substring(resource['@context']['cidme'].length - 1)).toBe('/')
+    expect(resource['@context']['rdf']).toBe(rdfUrl)
     expect(typeof resource['@type']).toBe('string')
-    expect(resource['@type']).toBe('EntityContext')
+    expect(resource['@type']).toBe('cidme:EntityContext')
     expect(typeof resource['@id']).toBe('string')
 
-    if (!options || options.createMetadata !== false) {
-        expect(validateCreatedMetadata(resource.metadata[0], options)).toBe(true)
-        expect(validateLastModifiedMetadata(resource.metadata[1], options)).toBe(true)
+    if (!options || options.createMetaData !== false) {
+        expect(validateCreatedMetaData(resource['cidme:metaDataGroups'][0], options)).toBe(true)
+        expect(validateLastModifiedMetaData(resource['cidme:metaDataGroups'][1], options)).toBe(true)
     }
 
     return true
@@ -88,161 +360,340 @@ function validateEntityContextResource(resource, options) {
 
 function validateEntityContextDataGroupResource(resource, options) {
     expect(typeof resource).toBe('object')
-    expect(typeof resource['@context']).toBe('string')
     expect(typeof resource['@type']).toBe('string')
-    expect(resource['@type']).toBe('EntityContextDataGroup')
+    expect(resource['@type']).toBe('cidme:EntityContextDataGroup')
     expect(typeof resource['@id']).toBe('string')
 
-    if (!options || options.createMetadata !== false) {
-        expect(validateCreatedMetadata(resource.metadata[0], options)).toBe(true)
-        expect(validateLastModifiedMetadata(resource.metadata[1], options)).toBe(true)
+    if (!options || options.createMetaData !== false) {
+        expect(validateCreatedMetaData(resource['cidme:metaDataGroups'][0], options)).toBe(true)
+        expect(validateLastModifiedMetaData(resource['cidme:metaDataGroups'][1], options)).toBe(true)
     }
 
-    if (!options) {} else {
-        if (!options.hasEntityContextDataGroupData || options.hasEntityContextDataGroupData === false) {} else {
-            expect(typeof resource['data']).toBe('object')
-            expect(resource['data'].length).toBeGreaterThan(0)
-
-            for (let i = 0; i < resource['data'].length; i++) {
-                expect(typeof resource['data'][i]).toBe('object')
-                expect(typeof resource['data'][i]['@context']).toBe('string')
-                expect(resource['data'][i]['@context'].substring(0, cidmeUrl.length)).toBe(cidmeUrl)
-            }
-        }
-    }
-
+    // If we were given data then make sure the number of data elements in our resource is no less than the number of elements in the data we were given.
     if (!options.data) {} else {
         if (
-            typeof resource['data'] !== 'object' ||
-            resource['data'].length < 1
+            typeof resource['cidme:data'] !== 'object' ||
+            resource['cidme:data'].length < options['data'].length
         ) {
             expect(true).toBe(false)
         }
+        //console.log(options['data'].length)
     }
+
+    // If our resource has data, validate each item.
+    if (
+        typeof resource['cidme:data'] === 'object' &&
+        resource['cidme:data'].length > 0
+    ) {
+        let dataFoundCnt = 0
+
+        for (let i = 0; i < resource['cidme:data'].length; i++) {
+            expect(typeof resource['cidme:data'][i]).toBe('object')
+            expect(validateRdfDataResource(resource['cidme:data'][i], options)).toBe(true)
+            expect(resource['cidme:data'][i]['@type'].indexOf('cidme:EntityContextData')).toBeGreaterThanOrEqual(0)
+
+            if (!options.data) {} else {
+                for (let dataCnt = 0; dataCnt < options['data'].length; dataCnt++) {
+                    if (resource['cidme:data'][i] === options['data'][dataCnt]) { dataFoundCnt++ }
+                }
+            }
+        }
+
+        // If we were given data, ensure we found it all in the resource.
+        if (!options.data) {} else {
+            expect(dataFoundCnt).toBe(options['data'].length)
+        }
+    }
+
 
     return true
 };
 
-function validateEntityContextLinkGroupResource(resource, options) {
+function validateEntityContextLinkDataGroupResource(resource, options) {
     expect(typeof resource).toBe('object')
-    expect(typeof resource['@context']).toBe('string')
     expect(typeof resource['@type']).toBe('string')
-    expect(resource['@type']).toBe('EntityContextLinkGroup')
+    expect(resource['@type']).toBe('cidme:EntityContextLinkDataGroup')
     expect(typeof resource['@id']).toBe('string')
 
-    if (!options || options.createMetadata !== false) {
-        expect(validateCreatedMetadata(resource.metadata[0], options)).toBe(true)
-        expect(validateLastModifiedMetadata(resource.metadata[1], options)).toBe(true)
+    if (!options || options.createMetaData !== false) {
+        expect(validateCreatedMetaData(resource['cidme:metaDataGroups'][0], options)).toBe(true)
+        expect(validateLastModifiedMetaData(resource['cidme:metaDataGroups'][1], options)).toBe(true)
     }
 
-    if (!options) {} else {
-        if (!options.hasEntityContextLinkGroupData || options.hasEntityContextLinkGroupData === false) {} else {
-            expect(typeof resource['data']).toBe('object')
-            expect(resource['data'].length).toBeGreaterThan(0)
-
-            for (let i = 0; i < resource['data'].length; i++) {
-                expect(typeof resource['data'][i]).toBe('object')
-                expect(typeof resource['data'][i]['@context']).toBe('string')
-                expect(resource['data'][i]['@context'].substring(0, cidmeUrl.length)).toBe(cidmeUrl)
-            }
-        }
-    }
-
+    // If we were given data then make sure the number of data elements in our resource is no less than the number of elements in the data we were given.
     if (!options.data) {} else {
         if (
-            typeof resource['data'] !== 'object' ||
-            resource['data'].length < 1
+            typeof resource['cidme:data'] !== 'object' ||
+            resource['cidme:data'].length < options['data'].length
         ) {
             expect(true).toBe(false)
+        }
+        //console.log(options['data'].length)
+    }
+
+    // If our resource has data, validate each item.
+    if (
+        typeof resource['cidme:data'] === 'object' &&
+        resource['cidme:data'].length > 0
+    ) {
+        let dataFoundCnt = 0
+
+        for (let i = 0; i < resource['cidme:data'].length; i++) {
+            expect(typeof resource['cidme:data'][i]).toBe('object')
+            expect(validateRdfDataResource(resource['cidme:data'][i], options)).toBe(true)
+            expect(resource['cidme:data'][i]['@type'].indexOf('cidme:EntityContextLinkData')).toBeGreaterThanOrEqual(0)
+
+            if (!options.data) {} else {
+                for (let dataCnt = 0; dataCnt < options['data'].length; dataCnt++) {
+                    if (resource['cidme:data'][i] === options['data'][dataCnt]) { dataFoundCnt++ }
+                }
+            }
+        }
+
+        // If we were given data, ensure we found it all in the resource.
+        if (!options.data) {} else {
+            expect(dataFoundCnt).toBe(options['data'].length)
         }
     }
 
     return true
 };
 
-function validateMetadataGroupResource(resource, options) {
+function validateMetaDataGroupResource(resource, options) {
     if (!options) { options = [] };
     if (!options.creatorId) { options.creatorId = null }
     if (!options.data) { options.data = false }
 
     expect(typeof resource).toBe('object')
-    expect(typeof resource['@context']).toBe('string')
     expect(typeof resource['@type']).toBe('string')
-    expect(resource['@type']).toBe('MetadataGroup')
+    expect(resource['@type']).toBe('cidme:MetaDataGroup')
     expect(typeof resource['@id']).toBe('string')
 
-    if (
-        typeof resource['data'] === 'object' &&
-        resource['data'].length > 0
-    ) {
-        for (let i = 0; i < resource['data'].length; i++) {
-            expect(typeof resource['data'][i]).toBe('object')
-            if (
-                typeof resource['data'][i]['@context'] !== 'string' &&
-                typeof resource['data'][i]['@context'] !== 'object'
-            ) {
-                expect(true).toBe(false)
-            }
-        }
-    }
-
+    // If we were given data then make sure the number of data elements in our resource is no less than the number of elements in the data we were given.
     if (!options.data) {} else {
         if (
-            typeof resource['data'] !== 'object' ||
-            resource['data'].length < 1
+            typeof resource['cidme:data'] !== 'object' ||
+            resource['cidme:data'].length < options['data'].length
         ) {
             expect(true).toBe(false)
         }
+        //console.log(options['data'].length)
     }
 
+    // If our resource has data, validate each item.
     if (
-        typeof resource['groupDataType'] === 'object' &&
-        resource['groupDataType'].length > 0
+        typeof resource['cidme:data'] === 'object' &&
+        resource['cidme:data'].length > 0
     ) {
-        for (let i = 0; i < resource['groupDataType'].length; i++) {
-            expect(typeof resource['groupDataType'][i]).toBe('object')
-            if (
-                typeof resource['groupDataType'][i]['@context'] !== 'string' &&
-                typeof resource['groupDataType'][i]['@context'] !== 'object'
-            ) {
-                expect(true).toBe(false)
+        let dataFoundCnt = 0
+
+        for (let i = 0; i < resource['cidme:data'].length; i++) {
+            expect(typeof resource['cidme:data'][i]).toBe('object')
+            expect(validateRdfDataResource(resource['cidme:data'][i], options)).toBe(true)
+            expect(resource['cidme:data'][i]['@type'].indexOf('cidme:MetaData')).toBeGreaterThanOrEqual(0)
+
+            if (!options.data) {} else {
+                for (let dataCnt = 0; dataCnt < options['data'].length; dataCnt++) {
+                    if (resource['cidme:data'][i] === options['data'][dataCnt]) { dataFoundCnt++ }
+                }
             }
         }
-    }
 
-    if (!options.groupDataType) {} else {
-        if (
-            typeof resource['groupDataType'] !== 'object' ||
-            resource['groupDataType'].length < 1
-        ) {
-            expect(true).toBe(false)
+        // If we were given data, ensure we found it all in the resource.
+        if (!options.data) {} else {
+            expect(dataFoundCnt).toBe(options['data'].length)
         }
     }
 
-    return true
-}
-
-function validateCreatedMetadata(resource, options) {
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
-
-    expect(resource['groupDataType'][0]['@type']).toBe('CreatedMetadata')
-    expect(resource['data'][0]['creator']).toBe(options.creatorId)
-    expect(Date.parse(resource['data'][0]['created'])).toBeLessThanOrEqual(Date.now())
-    expect(Date.parse(resource['data'][0]['created'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+    /*
+    if (!options || !options.createMetaData || options.createMetaData !== false) {
+        expect(validateCreatedMetaData(resource['cidme:metaDataGroups'][0], options)).toBe(true)
+        expect(validateLastModifiedMetaData(resource['cidme:metaDataGroups'][1], options)).toBe(true)
+    }
+     */
 
     return true
 }
 
-function validateLastModifiedMetadata(resource, options) {
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
+function validateRdfDataResource(resource, options) {
+    if (!options) { options = [] };
 
-    expect(resource['groupDataType'][0]['@type']).toBe('LastModifiedMetadata')
-    expect(resource['data'][0]['creator']).toBe(options.creatorId)
-    expect(Date.parse(resource['data'][0]['modified'])).toBeLessThanOrEqual(Date.now())
-    expect(Date.parse(resource['data'][0]['modified'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+    expect(typeof resource).toBe('object')
+
+    expect(typeof resource['@type']).toBe('object')
+    expect(resource['@type'].indexOf('rdf:statement')).toBeGreaterThanOrEqual(0)
+    expect(resource['@type'].indexOf('cidme:RdfData')).toBeGreaterThanOrEqual(0)
+
+    expect(typeof resource['@id']).toBe('string')
+
+    expect(typeof resource['rdf:predicate']).toBe('object')
+    expect(typeof resource['rdf:predicate']['@context']).toBe('object')
+    expect(Object.keys(resource['rdf:predicate']['@context']).length).toBeGreaterThan(0)
+    expect(typeof resource['rdf:predicate']['@id']).toBe('string')
+
+    expect(typeof resource['rdf:object']).toBe('object')
+
 
     return true
 }
+
+function validateCreatedMetaData(resource, options) {
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
+
+    expect(resource['cidme:data'][0]['rdf:predicate']['@id']).toBe('rdf:type')
+    expect(resource['cidme:data'][0]['rdf:object']['@id']).toBe('cidme:CreatedMetaData')
+
+    expect(resource['cidme:data'][1]['rdf:predicate']['@id']).toBe('dc:created')
+    expect(Date.parse(resource['cidme:data'][1]['rdf:object']['@value'])).toBeLessThanOrEqual(Date.now())
+    expect(Date.parse(resource['cidme:data'][1]['rdf:object']['@value'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+
+    if (options.creator) {
+        expect(resource['cidme:data'][2]['rdf:predicate']['@id']).toBe('dc:creator')
+        expect(resource['cidme:data'][2]['rdf:object']['@value']).toBe(options.creator)
+    }
+
+    return true
+}
+
+function validateLastModifiedMetaData(resource, options) {
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
+
+    expect(resource['cidme:data'][0]['rdf:predicate']['@id']).toBe('rdf:type')
+    expect(resource['cidme:data'][0]['rdf:object']['@id']).toBe('cidme:LastModifiedMetaData')
+
+    expect(resource['cidme:data'][1]['rdf:predicate']['@id']).toBe('dc:modified')
+    expect(Date.parse(resource['cidme:data'][1]['rdf:object']['@value'])).toBeLessThanOrEqual(Date.now())
+    expect(Date.parse(resource['cidme:data'][1]['rdf:object']['@value'])).toBeGreaterThanOrEqual(Date.parse('2018-01-01T00:00:00Z'))
+
+    if (options.creator) {
+        expect(resource['cidme:data'][2]['rdf:predicate']['@id']).toBe('dc:creator')
+        expect(resource['cidme:data'][2]['rdf:object']['@value']).toBe(options.creator)
+    }
+
+    return true
+}
+
+function createLabelMetaData(labelText = '') {
+    let retData = []
+
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelMetaData'
+        }
+    ))
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': labelText
+        }
+    ))
+
+    return retData
+}
+
+function createDefaultMetaData() {
+    let retData = []
+
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidmeext': cidmeUrlExt },
+            '@id': 'cidmeext:DefaultMetaData'
+        }
+    ))
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'cidmeext': cidmeUrlExt },
+            '@id': 'cidmeext:default'
+        }, {
+            '@value': true
+        }
+    ))
+
+    return retData
+}
+
+function createThingEntityTypeMetaData() {
+    let retData = []
+
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidmeext': cidmeUrlExt },
+            '@id': 'cidmeext:EntityTypeMetaData'
+        }
+    ))
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'cidmeext': cidmeUrlExt },
+            '@id': 'cidmeext:entityType'
+        }, {
+            '@context': { 'cidmeext': cidmeUrlExt },
+            '@id': 'cidmeext:ThingEntityType'
+        }
+    ))
+
+    return retData
+}
+
+function createLabelEntityContextData(labelText = '') {
+    let retData = []
+
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:EntityContextData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelEntityContextData'
+        }
+    ))
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:EntityContextData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': labelText
+        }
+    ))
+
+    return retData
+}
+
+function createLabelEntityContextLinkData(labelText = '') {
+    let retData = []
+
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:EntityContextLinkData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelEntityContextLinkData'
+        }
+    ))
+    retData.push(cidme.createRdfDataResource(
+        ['cidme:EntityContextLinkData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': labelText
+        }
+    ))
+
+    return retData
+}
+
 /* ************************************************************************** */
 
 /* ************************************************************************** */
@@ -256,7 +707,10 @@ test('Include CIDME JS', () => {
 
 test('Init CIDME JS object', () => {
     let Cidme = require('../dist/cidme')
-    let cidme = new Cidme(ajv, UUID)
+    let cidme = new Cidme({
+        'jsonSchemaValidator': ajv,
+        'uuidGenerator': UUID
+    })
 
     expect(typeof(cidme)).toBe('object')
     expect(cidme.debug).toBe(false)
@@ -264,16 +718,95 @@ test('Init CIDME JS object', () => {
 
 test('Init CIDME JS object with debug argument', () => {
     let Cidme = require('../dist/cidme')
-    let cidme = new Cidme(ajv, UUID, null, null, true)
-
+    let cidme = new Cidme({
+        'jsonSchemaValidator': ajv,
+        'uuidGenerator': UUID,
+        'debug': true
+    })
     expect(typeof(cidme)).toBe('object')
     expect(cidme.debug).toBe(true)
+})
+
+test('Init CIDME JS object - BAD no arguments', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme()
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD empty arguments', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme({})
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD null arguments', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme(null)
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD blank arguments', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme('')
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD incorrectly specified argument', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme(ajv)
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD incorrectly specified arguments', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme(ajv, UUID)
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
+})
+
+test('Init CIDME JS object - BAD incorrectly specified arguments as object', () => {
+    let Cidme = require('../dist/cidme')
+    expect(() => {
+        let cidme = new Cidme({
+            'ajv': ajv,
+            'UUID': UUID
+        })
+
+        /* Stop StandardJS from complaining */
+        if (cidme) { /* */ }
+    }).toThrow()
 })
 
 test('Init CIDME JS object - BAD: Null jsonSchemaValidator resource', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme(null, UUID)
+        let cidme = new Cidme({
+            'jsonSchemaValidator': null,
+            'uuidGenerator': UUID
+        })
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
@@ -283,7 +816,10 @@ test('Init CIDME JS object - BAD: Null jsonSchemaValidator resource', () => {
 test('Init CIDME JS object - BAD: Empty jsonSchemaValidator resource object', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme({}, UUID)
+        let cidme = new Cidme({
+            'jsonSchemaValidator': {},
+            'uuidGenerator': UUID
+        })
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
@@ -293,7 +829,10 @@ test('Init CIDME JS object - BAD: Empty jsonSchemaValidator resource object', ()
 test('Init CIDME JS object - BAD: Blank jsonSchemaValidator resource', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme({}, UUID)
+        let cidme = new Cidme({
+            'jsonSchemaValidator': '',
+            'uuidGenerator': UUID
+        })
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
@@ -303,7 +842,10 @@ test('Init CIDME JS object - BAD: Blank jsonSchemaValidator resource', () => {
 test('Init CIDME JS object - BAD: Null uuidGenerator resource', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme(ajv, null)
+        let cidme = new Cidme({
+            'jsonSchemaValidator': ajv,
+            'uuidGenerator': null
+        })
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
@@ -313,7 +855,11 @@ test('Init CIDME JS object - BAD: Null uuidGenerator resource', () => {
 test('Init CIDME JS object - BAD: Empty uuidGenerator resource object', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme(ajv, {})
+        let cidme = new Cidme({
+            'jsonSchemaValidator': ajv,
+            'uuidGenerator': {}
+        })
+
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
@@ -323,86 +869,42 @@ test('Init CIDME JS object - BAD: Empty uuidGenerator resource object', () => {
 test('Init CIDME JS object - BAD: Blank uuidGenerator resource', () => {
     let Cidme = require('../dist/cidme')
     expect(() => {
-        let cidme = new Cidme(ajv, '')
+        let cidme = new Cidme({
+            'jsonSchemaValidator': ajv,
+            'uuidGenerator': ''
+        })
 
         /* Stop StandardJS from complaining */
         if (cidme) { /* */ }
     }).toThrow()
 })
 
-test('Init CIDME JS object with jsonld argument', () => {
-    let Cidme = require('../dist/cidme')
-    let cidme = new Cidme(ajv, UUID, jsonld)
-
-    expect(typeof(cidme)).toBe('object')
-    expect(cidme.hasJsonld).toBe(true)
-})
-
-test('Init CIDME JS object - BAD: Null jsonld resource', () => {
-    let Cidme = require('../dist/cidme')
-
-    let cidme = new Cidme(ajv, UUID, null)
-
-    expect(cidme.hasJsonld).toBe(false)
-})
-
-test('Init CIDME JS object - BAD: Empty jsonld resource object', () => {
-    let Cidme = require('../dist/cidme')
-
-    let cidme = new Cidme(ajv, UUID, {})
-
-    expect(cidme.hasJsonld).toBe(false)
-})
-
-test('Init CIDME JS object - BAD: Blank jsonld resource', () => {
-    let Cidme = require('../dist/cidme')
-
-    let cidme = new Cidme(ajv, UUID, '')
-
-    expect(cidme.hasJsonld).toBe(false)
-})
-
-test('Init CIDME JS object with N3 argument', () => {
-    let Cidme = require('../dist/cidme')
-    let cidme = new Cidme(ajv, UUID, null, N3)
-
-    expect(typeof(cidme)).toBe('object')
-    expect(cidme.hasN3).toBe(true)
-})
-
-test('Init CIDME JS object - BAD: Null N3 resource', () => {
-    let Cidme = require('../dist/cidme')
-
-    let cidme = new Cidme(ajv, UUID, null, null)
-
-    expect(cidme.hasN3).toBe(false)
-})
-
-test('Init CIDME JS object - BAD: Blank N3 resource', () => {
-    let Cidme = require('../dist/cidme')
-
-    let cidme = new Cidme(ajv, UUID, null, '')
-
-    expect(cidme.hasN3).toBe(false)
-})
-
 test('Set CIDME debug option to false', () => {
-        let Cidme = require('../dist/cidme')
-        let cidme = new Cidme(ajv, UUID, null, null, true)
-        expect(typeof(cidme)).toBe('object')
-        expect(cidme.debug).toBe(true)
-
-        cidme.debug = false
-
-        expect(cidme.debug).toBe(false)
+    let Cidme = require('../dist/cidme')
+    let cidme = new Cidme({
+        'jsonSchemaValidator': ajv,
+        'uuidGenerator': UUID,
+        'debug': true
     })
-    /* ************************************************************************** */
+
+    expect(typeof(cidme)).toBe('object')
+    expect(cidme.debug).toBe(true)
+
+    cidme.debug = false
+    expect(cidme.debug).toBe(false)
+})
+
+/* ************************************************************************** */
 
 /* ************************************************************************** */
 // Init CIDME core
 
 let Cidme = require('../dist/cidme')
-let cidme = new Cidme(ajv, UUID)
+
+let cidme = new Cidme({
+    'jsonSchemaValidator': ajv,
+    'uuidGenerator': UUID
+})
 
 /* ************************************************************************** */
 
@@ -422,39 +924,17 @@ test('Validate blank resource - BAD', () => {
 })
 
 test('Validate empty resource object - BAD', () => {
-        let resource = {}
+    let resource = {}
 
-        expect(cidme.validate(resource)).toBe(false)
-    })
-    /* ************************************************************************** */
+    expect(cidme.validate(resource)).toBe(false)
+})
+
+/* ************************************************************************** */
 
 /* ************************************************************************** */
 // Test other validation functions
 
-test('Validate datastore (local)', () => {
-    let datastore = 'local'
-
-    expect(cidme.validateDatastore(datastore, true)).toBe(true)
-})
-
-test('Validate datastore (public)', () => {
-    let datastore = 'public'
-
-    expect(cidme.validateDatastore(datastore, true)).toBe(true)
-})
-
-test('Validate datastore (UUID)', () => {
-    let datastore = UUID.genV4().hexString
-
-    expect(cidme.validateDatastore(datastore, true)).toBe(true)
-})
-
-test('Validate datastore - BAD: Bad value', () => {
-        let datastore = 'xyz'
-
-        expect(cidme.validateDatastore(datastore, true)).toBe(false)
-    })
-    /* ************************************************************************** */
+/* ************************************************************************** */
 
 /* ************************************************************************** */
 // Test misc. functions
@@ -464,8 +944,8 @@ test('Validate getCidmeUrl', () => {
     let resourceType = 'Entity'
     let id = UUID.genV4().hexString
 
-    let cidmeUri = cidme.getCidmeUri(datastore, resourceType, id)
-    let cidmeUri2 = 'cidme://' + datastore + '/' + resourceType + '/' + id
+    let cidmeUri = cidme.getCidmeUri(resourceType, id)
+    let cidmeUri2 = 'cidme://' + resourceType + '/' + id
 
     expect(cidmeUri).toBe(cidmeUri2)
 })
@@ -588,38 +1068,21 @@ test('Validate getCidmeUrl - BAD: Bad UUID value', () => {
 })
 
 test('Validate parseCidmeUrl', () => {
-    let datastore = 'local'
     let resourceType = 'Entity'
     let id = UUID.genV4().hexString
 
-    let cidmeUri = 'cidme://' + datastore + '/' + resourceType + '/' + id
+    let cidmeUri = 'cidme://' + resourceType + '/' + id
     let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
 
-    expect(cidmeUri2.datastore).toBe(datastore)
     expect(cidmeUri2.resourceType).toBe(resourceType)
     expect(cidmeUri2.id).toBe(id)
 })
 
 test('Validate parseCidmeUrl - BAD: Bad URI scheme', () => {
-    let datastore = 'local'
     let resourceType = 'Entity'
     let id = UUID.genV4().hexString
 
-    let cidmeUri = 'http://' + datastore + '/' + resourceType + '/' + id
-    expect(() => {
-        let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
-
-        /* Stop StandardJS from complaining */
-        if (cidmeUri2) { /* */ }
-    }).toThrow()
-})
-
-test('Validate parseCidmeUrl - BAD: Bad datastore', () => {
-    let datastore = 'xyz'
-    let resourceType = 'Entity'
-    let id = UUID.genV4().hexString
-
-    let cidmeUri = 'cidme://' + datastore + '/' + resourceType + '/' + id
+    let cidmeUri = 'http://' + resourceType + '/' + id
     expect(() => {
         let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
 
@@ -629,11 +1092,10 @@ test('Validate parseCidmeUrl - BAD: Bad datastore', () => {
 })
 
 test('Validate parseCidmeUrl - BAD: Bad resourceType', () => {
-    let datastore = 'local'
     let resourceType = 'xyz'
     let id = UUID.genV4().hexString
 
-    let cidmeUri = 'cidme://' + datastore + '/' + resourceType + '/' + id
+    let cidmeUri = 'cidme://' + resourceType + '/' + id
     expect(() => {
         let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
 
@@ -643,64 +1105,67 @@ test('Validate parseCidmeUrl - BAD: Bad resourceType', () => {
 })
 
 test('Validate parseCidmeUrl - BAD: Bad ID', () => {
-        let datastore = 'local'
-        let resourceType = 'Entity'
-        let id = 'xyz'
+    let resourceType = 'Entity'
+    let id = 'xyz'
 
-        let cidmeUri = 'cidme://' + datastore + '/' + resourceType + '/' + id
-        expect(() => {
-            let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
+    let cidmeUri = 'cidme://' + resourceType + '/' + id
+    expect(() => {
+        let cidmeUri2 = cidme.parseCidmeUri(cidmeUri)
 
-            /* Stop StandardJS from complaining */
-            if (cidmeUri2) { /* */ }
-        }).toThrow()
-    })
-    /* ************************************************************************** */
+        /* Stop StandardJS from complaining */
+        if (cidmeUri2) { /* */ }
+    }).toThrow()
+})
+
+/* ************************************************************************** */
 
 /* ************************************************************************** */
 // Create and validate internally created resources
 
-test('Validate internally-created basic Entity w/no metadata', () => {
+test('Validate internally-created basic Entity w/no metaData', () => {
     let options = []
-    options.createMetadata = false
+    options.createMetaData = false
 
     let resource = cidme.createEntityResource(options)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
 })
+
 
 test('Validate internally-created basic Entity', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
 
+    //console.log(JSON.stringify(resource))
+
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
 })
+
 
 test('Validate internally-created basic Entity w/creatorId', () => {
     let options = []
     options.creatorId = creatorId
+
     let resource = cidme.createEntityResource(options)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic Entity - BAD: Invalid datastore', () => {
-    expect(() => {
-        cidme.createEntityResource({ 'datastore': 'xyz' })
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContext w/no metadata', () => {
+test('Validate internally-created basic EntityContext w/no metaData', () => {
     let options = []
-    options.createMetadata = false
+    options.createMetaData = false
 
     let resourceEntity = cidme.createEntityResource(options)
 
-    let resource = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resource = cidme.createEntityContextResource(options)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityContextResource(resource, options)).toBe(true)
@@ -711,10 +1176,11 @@ test('Validate internally-created basic EntityContext', () => {
 
     let resourceEntity = cidme.createEntityResource()
 
-    let resource = cidme.createEntityContextResource(resourceEntity['@id'])
+    let resource = cidme.createEntityContextResource()
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resourceEntity, options)).toBe(true)
     expect(validateEntityContextResource(resource, options)).toBe(true)
 })
 
@@ -723,158 +1189,123 @@ test('Validate internally-created basic EntityContext w/creatorId', () => {
     options.creatorId = creatorId
     let resourceEntity = cidme.createEntityResource(options)
 
-    let resource = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resource = cidme.createEntityContextResource(options)
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resourceEntity, options)).toBe(true)
     expect(validateEntityContextResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContext - BAD: No parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextResource()
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContext - BAD: Blank parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextResource('')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContext - BAD: Null parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextResource(null)
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContext - BAD: Bad parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextResource('http://local/Entity/xyz')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic MetadataGroup w/no metadata', () => {
+test('Validate internally-created basic MetaDataGroup w/no metaData', () => {
     let options = []
-    options.createMetadata = false
+    options.createMetaData = false
 
     let resourceEntity = cidme.createEntityResource(options)
 
-    let resource = cidme.createMetadataGroupResource(resourceEntity['@id'], options)
+    let resource = cidme.createMetaDataGroupResource(options)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic MetadataGroup', () => {
+test('Validate internally-created basic MetaDataGroup', () => {
     let options = []
 
-    let resourceEntity = cidme.createEntityResource()
+    let resource = cidme.createMetaDataGroupResource()
 
-    let resource = cidme.createMetadataGroupResource(resourceEntity['@id'])
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic MetadataGroup w/creatorId', () => {
+test('Validate internally-created basic MetaDataGroup w/creatorId', () => {
     let options = []
     options.creatorId = creatorId
-    let resourceEntity = cidme.createEntityResource(options)
 
-    let resource = cidme.createMetadataGroupResource(resourceEntity['@id'], options)
+    let resource = cidme.createMetaDataGroupResource(options)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic MetadataGroup - with data', () => {
+
+test('Validate internally-created basic MetaDataGroup - with data', () => {
     let options = []
-    options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-    }]
+    options['data'] = []
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelMetaData'
+        }
+    ))
 
-    let resourceEntity = cidme.createEntityResource(options)
+    let resource = cidme.createMetaDataGroupResource(options)
 
-    let resource = cidme.createMetadataGroupResource(resourceEntity['@id'], options)
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic MetadataGroup - BAD: with bad data', () => {
+
+test('Validate internally-created basic MetaDataGroup - with multiple data', () => {
+    let options = []
+    options['data'] = []
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelMetaData'
+        }
+    ))
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:MetaData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': 'Test label!'
+        }
+    ))
+
+    let resource = cidme.createMetaDataGroupResource(options)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateMetaDataGroupResource(resource, options)).toBe(true)
+})
+
+test('Validate internally-created basic MetaDataGroup - BAD: with bad data', () => {
     let options = []
     options['data'] = [{
         'x': 'y'
     }]
 
-    let resourceEntity = cidme.createEntityResource()
-
     expect(() => {
-        let resource = cidme.createMetadataGroupResource(resourceEntity['@id'], options)
+        let resource = cidme.createMetaDataGroupResource(options)
 
         /* Stop StandardJS from complaining */
         if (resource) { /* */ }
     }).toThrow()
 })
 
-test('Validate internally-created basic MetadataGroup - BAD: No parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createMetadataGroupResource()
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic MetadataGroup - BAD: Blank parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createMetadataGroupResource('')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic MetadataGroup - BAD: Null parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createMetadataGroupResource(null)
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic MetadataGroup - BAD: Bad parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createMetadataGroupResource('http://local/Entity/xyz')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextDataGroup w/no metadata', () => {
+test('Validate internally-created basic EntityContextDataGroup w/no metaData', () => {
     let options = []
-    options.createMetadata = false
+    options.createMetaData = false
 
     let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resourceEntityContext = cidme.createEntityContextResource(options)
 
-    let resource = cidme.createEntityContextDataGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextDataGroupResource(options)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
@@ -884,9 +1315,9 @@ test('Validate internally-created basic EntityContextDataGroup', () => {
     let options = []
 
     let resourceEntity = cidme.createEntityResource()
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'])
+    let resourceEntityContext = cidme.createEntityContextResource()
 
-    let resource = cidme.createEntityContextDataGroupResource(resourceEntityContext['@id'])
+    let resource = cidme.createEntityContextDataGroupResource()
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
@@ -896,317 +1327,262 @@ test('Validate internally-created basic EntityContextDataGroup w/creatorId', () 
     let options = []
     options.creatorId = creatorId
     let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resourceEntityContext = cidme.createEntityContextResource(options)
 
-    let resource = cidme.createEntityContextDataGroupResource(resourceEntityContext['@id'], options)
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
-})
-
-test('Validate internally-created basic EntityContextDataGroup - with data', () => {
-    let options = []
-    options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-    }]
-
-    let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
-
-    let resource = cidme.createEntityContextDataGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextDataGroupResource(options)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextDataGroup - BAD: with bad data', () => {
+test('Validate internally-created basic EntityContextDataGroup - with multiple data', () => {
     let options = []
-    options['data'] = [{
-        'x': 'y'
-    }]
+    options['createMetaData'] = false
+    options['data'] = []
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:EntityContextData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelMetaData'
+        }
+    ))
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:EntityContextData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': 'Test label!'
+        }
+    ))
 
     let resourceEntity = cidme.createEntityResource()
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'])
+    let resourceEntityContext = cidme.createEntityContextResource()
 
-    expect(() => {
-        let resource = cidme.createEntityContextDataGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextDataGroupResource(options)
 
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
+    //console.log(JSON.stringify(resource))
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextDataGroup - BAD: No parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextDataGroupResource()
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextDataGroup - BAD: Blank parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextDataGroupResource('')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextDataGroup - BAD: Null parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextDataGroupResource(null)
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextDataGroup - BAD: Bad parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextDataGroupResource('http://local/Entity/xyz')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextLinkGroup w/no metadata', () => {
+test('Validate internally-created basic EntityContextLinkDataGroup w/no metaData', () => {
     let options = []
-    options.createMetadata = false
+    options.createMetaData = false
 
     let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resourceEntityContext = cidme.createEntityContextResource(options)
 
-    let resource = cidme.createEntityContextLinkGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextLinkDataGroupResource(options)
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextLinkGroup', () => {
+test('Validate internally-created basic EntityContextLinkDataGroup', () => {
     let options = []
 
     let resourceEntity = cidme.createEntityResource()
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'])
+    let resourceEntityContext = cidme.createEntityContextResource()
 
-    let resource = cidme.createEntityContextLinkGroupResource(resourceEntityContext['@id'])
+    let resource = cidme.createEntityContextLinkDataGroupResource()
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextLinkGroup w/creatorId', () => {
+test('Validate internally-created basic EntityContextLinkDataGroup w/creatorId', () => {
     let options = []
     options.creatorId = creatorId
 
     let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
+    let resourceEntityContext = cidme.createEntityContextResource(options)
 
-    let resource = cidme.createEntityContextLinkGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextLinkDataGroupResource(options)
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
-})
-
-test('Validate internally-created basic EntityContextLinkGroup - with data', () => {
-    let options = []
-    options['data'] = [{
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-    }]
-
-    let resourceEntity = cidme.createEntityResource(options)
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'], options)
-
-    let resource = cidme.createEntityContextLinkGroupResource(resourceEntityContext['@id'], options)
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextLinkGroup - BAD: with bad data', () => {
+test('Validate internally-created basic EntityContextLinkDataGroup - with multiple data', () => {
     let options = []
-    options['data'] = [{
-        'x': 'y'
-    }]
+    options['createMetaData'] = false
+    options['data'] = []
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:EntityContextLinkData'], {
+            '@context': { 'rdf': rdfUrl },
+            '@id': 'rdf:type'
+        }, {
+            '@context': { 'cidme': cidmeUrlCore },
+            '@id': 'cidme:LabelMetaData'
+        }
+    ))
+    options['data'].push(cidme.createRdfDataResource(
+        ['cidme:EntityContextLinkData'], {
+            '@context': { 'skos': skosUrl },
+            '@id': 'skos:preflabel'
+        }, {
+            '@value': 'Test label!'
+        }
+    ))
 
     let resourceEntity = cidme.createEntityResource()
-    let resourceEntityContext = cidme.createEntityContextResource(resourceEntity['@id'])
+    let resourceEntityContext = cidme.createEntityContextResource()
 
-    expect(() => {
-        let resource = cidme.createEntityContextLinkGroupResource(resourceEntityContext['@id'], options)
+    let resource = cidme.createEntityContextLinkDataGroupResource(options)
 
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
+    //console.log(JSON.stringify(resource))
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource, options)).toBe(true)
 })
 
-test('Validate internally-created basic EntityContextLinkGroup - BAD: No parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextLinkGroupResource()
+// TODO TODO TODO - Add rest of internally created tests
 
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
+/* ************************************************************************** */
 
-test('Validate internally-created basic EntityContextLinkGroup - BAD: Blank parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextLinkGroupResource('')
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextlinkGroup - BAD: Null parentId specified', () => {
-    expect(() => {
-        let resource = cidme.createEntityContextLinkGroupResource(null)
-
-        /* Stop StandardJS from complaining */
-        if (resource) { /* */ }
-    }).toThrow()
-})
-
-test('Validate internally-created basic EntityContextLinkGroup - BAD: Bad parentId specified', () => {
-        expect(() => {
-            let resource = cidme.createEntityContextLinkGroupResource('http://local/Entity/xyz')
-
-            /* Stop StandardJS from complaining */
-            if (resource) { /* */ }
-        }).toThrow()
-    })
-    /* ************************************************************************** */
 
 /* ************************************************************************** */
 // Test resource adding functions
 
-test('Test addMetadataGroupToResource to Entity resource', () => {
+test('Test addMetaDataGroupToResource to Entity resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let metadataGroupResource = cidme.createMetadataGroupResource(resource['@id'])
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
-    resource = cidme.addMetadataGroupToResource(resource, metadataGroupResource)
+    //console.log(JSON.stringify(resource))
+    //console.log(JSON.stringify(metaDataGroupResource))
+
+    resource = cidme.addMetaDataGroupToResource(resource, metaDataGroupResource)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[2], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:metaDataGroups'][2], options)).toBe(true)
 })
 
-test('Test adding MetadataGroup to Entity via addResourceToParent', () => {
+test('Test adding MetaDataGroup to Entity via addResourceToParent', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let metadataGroupResource = cidme.createMetadataGroupResource(resource['@id'])
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
-    resource = cidme.addResourceToParent(resource['@id'], resource, metadataGroupResource)
+    resource = cidme.addResourceToParent(resource['@id'], resource, metaDataGroupResource, 'cidme:metaDataGroups')
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[2], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:metaDataGroups'][2], options)).toBe(true)
 })
 
-test('Test multiple addMetadataGroupToResource\'s to Entity resource', () => {
+test('Test multiple addMetaDataGroupToResource\'s to Entity resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let metadataGroupResource = cidme.createMetadataGroupResource(resource['@id'])
-    let metadataGroupResource2 = cidme.createMetadataGroupResource(resource['@id'])
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
+    let metaDataGroupResource2 = cidme.createMetaDataGroupResource()
 
-    resource = cidme.addMetadataGroupToResource(resource, metadataGroupResource)
-    resource = cidme.addMetadataGroupToResource(resource, metadataGroupResource2)
+    resource = cidme.addMetaDataGroupToResource(resource, metaDataGroupResource)
+    resource = cidme.addMetaDataGroupToResource(resource, metaDataGroupResource2)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[2], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[3], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:metaDataGroups'][2], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:metaDataGroups'][3], options)).toBe(true)
 })
 
-test('Test addMetadataGroupToResource to EntityContext', () => {
+test('Test addMetaDataGroupToResource to EntityContext', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
     resource = cidme.addEntityContextToResource(resource, entityContextResource)
-    resource.entityContexts[0] = cidme.addMetadataGroupToResource(resource.entityContexts[0], metadataGroupResource)
+    resource['cidme:entityContexts'][0] = cidme.addMetaDataGroupToResource(resource['cidme:entityContexts'][0], metaDataGroupResource)
+
+    //console.log(JSON.stringify(resource))
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].metadata[2], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][2], options)).toBe(true)
 })
 
-test('Test adding MetadataGroup to EntityContext via addResourceToParent', () => {
+test('Test adding MetaDataGroup to EntityContext via addResourceToParent', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
     resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
-    resource = cidme.addResourceToParent(entityContextResource['@id'], resource, metadataGroupResource)
+    resource = cidme.addResourceToParent(entityContextResource['@id'], resource, metaDataGroupResource, 'cidme:metaDataGroups')
+
+    //console.log(JSON.stringify(resource))
+    //console.log(JSON.stringify(metaDataGroupResource))
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].metadata[2], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][2], options)).toBe(true)
 })
 
-test('Test addMetadataGroupToResource - BAD: null resource', () => {
+test('Test addMetaDataGroupToResource - BAD: null resource', () => {
     let resource = cidme.createEntityResource()
 
     expect(() => {
-        resource = cidme.addMetadataGroupToResource(null, cidme.createMetadataGroupResource(resource['@id']))
+        resource = cidme.addMetaDataGroupToResource(null, cidme.createMetaDataGroupResource())
     }).toThrow()
 })
 
-test('Test addMetadataGroupToResource - BAD: null MetadataGroup', () => {
+test('Test addMetaDataGroupToResource - BAD: null MetaDataGroup', () => {
     let resource = cidme.createEntityResource()
 
     expect(() => {
-        resource = cidme.addMetadataGroupToResource(resource, null)
+        resource = cidme.addMetaDataGroupToResource(resource, null)
     }).toThrow()
 })
 
-test('Test addMetadataGroupToResource - BAD: Wrong resource type', () => {
+test('Test addMetaDataGroupToResource - BAD: Wrong resource type', () => {
     let resource = cidme.createEntityResource()
-    let metadataGroupResource = cidme.createEntityContextResource(resource['@id'])
+    let metaDataGroupResource = cidme.createEntityContextResource()
 
     expect(() => {
-        resource = cidme.addMetadataGroupToResource(resource, metadataGroupResource)
+        resource = cidme.addMetaDataGroupToResource(resource, metaDataGroupResource)
     }).toThrow()
 })
+
 
 test('Test addEntityContextToResource to Entity resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
 
     resource = cidme.addEntityContextToResource(resource, entityContextResource)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
 })
 
 test('Test adding EntityContext to Entity via addResourceToParent', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
 
     resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
 })
 
 test('Test addEntityContextToResource - BAD: null resource', () => {
@@ -1215,14 +1591,14 @@ test('Test addEntityContextToResource - BAD: null resource', () => {
     let resource = cidme.createEntityResource()
 
     expect(() => {
-        resource = cidme.addEntityContextToResource(null, cidme.createEntityContextResource(resource['@id']))
+        resource = cidme.addEntityContextToResource(null, cidme.createEntityContextResource())
 
         /* Stop StandardJS from complaining */
         if (resource || options) { /* */ }
     }).toThrow()
 })
 
-test('Test addEntityContextToResource - BAD: null MetadataGroup', () => {
+test('Test addEntityContextToResource - BAD: null MetaDataGroup', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
@@ -1239,125 +1615,10 @@ test('Test addEntityContextToResource - BAD: Wrong resource type', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let metadataGroupResource = cidme.createMetadataGroupResource(resource['@id'])
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
     expect(() => {
-        resource = cidme.addEntityContextToResource(resource, metadataGroupResource)
-
-        /* Stop StandardJS from complaining */
-        if (resource || options) { /* */ }
-    }).toThrow()
-})
-
-test('Test addEntityContextLinkGroupToResource to EntityContext resource', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextLinkGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
-
-    resource = cidme.addEntityContextToResource(resource, entityContextResource)
-    resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource.entityContexts[0], entityContextLinkGroupResource)
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-})
-
-test('Test adding EntityContextLinkGroup to EntityContext via addResourceToParent', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextLinkGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
-
-    resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0]['@id'], resource, entityContextLinkGroupResource)
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-})
-
-test('Test addMetadataGroupToResource to EntityContextLinkGroup resource', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextLinkGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextLinkGroupResource['@id'])
-
-    resource = cidme.addEntityContextToResource(resource, entityContextResource)
-    resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource.entityContexts[0], entityContextLinkGroupResource)
-    resource.entityContexts[0].entityContextLinks[0] = cidme.addMetadataGroupToResource(resource.entityContexts[0].entityContextLinks[0], metadataGroupResource)
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextLinks[0].metadata[2], options)).toBe(true)
-})
-
-test('Test adding MetadataGroup to EntityContextLinkGroup via addResourceToParent', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextLinkGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextLinkGroupResource['@id'])
-
-    resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0]['@id'], resource, entityContextLinkGroupResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0].entityContextLinks[0]['@id'], resource, metadataGroupResource)
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextLinks[0].metadata[1], options)).toBe(true)
-})
-
-test('Test addEntityContextLinkGroupToResource - BAD: pass EntityContext resource', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextLinkGroupResource = cidme.createEntityContextResource(entityContextResource['@id'])
-
-    resource = cidme.addEntityContextToResource(resource, entityContextResource)
-
-    expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource.entityContexts[0], entityContextLinkGroupResource)
-
-        /* Stop StandardJS from complaining */
-        if (resource || options) { /* */ }
-    }).toThrow()
-})
-
-test('Test addEntityContextLinkGroupToResource - BAD: null resource', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource(resource['@id']))
-
-    expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(null, cidme.createEntityContextLinkGroupResource(resource.entityContexts[0]['@id']))
-
-        /* Stop StandardJS from complaining */
-        if (resource || options) { /* */ }
-    }).toThrow()
-})
-
-test('Test addEntityContextLinkGroupToResource - BAD: null MetadataGroup', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource(resource['@id']))
-
-    expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextLinkGroupToResource(resource, null)
+        resource = cidme.addEntityContextToResource(resource, metaDataGroupResource)
 
         /* Stop StandardJS from complaining */
         if (resource || options) { /* */ }
@@ -1368,100 +1629,83 @@ test('Test addEntityContextDataGroupToResource to EntityContext resource', () =>
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource()
 
     resource = cidme.addEntityContextToResource(resource, entityContextResource)
-    resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource)
+    resource['cidme:entityContexts'][0] = cidme.addEntityContextDataGroupToResource(resource['cidme:entityContexts'][0], entityContextDataGroupResource)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0], options)).toBe(true)
 })
 
 test('Test adding EntityContextDataGroup to EntityContext via addResourceToParent', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource()
 
     resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0]['@id'], resource, entityContextDataGroupResource)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, entityContextDataGroupResource, 'cidme:entityContextDataGroups')
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0], options)).toBe(true)
 })
 
-test('Test addMetadataGroupToResource to EntityContextDataGroup resource', () => {
+test('Test addMetaDataGroupToResource to EntityContextDataGroup resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextDataGroupResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
     resource = cidme.addEntityContextToResource(resource, entityContextResource)
-    resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource)
-    resource.entityContexts[0].entityContextData[0] = cidme.addMetadataGroupToResource(resource.entityContexts[0].entityContextData[0], metadataGroupResource)
+    resource['cidme:entityContexts'][0] = cidme.addEntityContextDataGroupToResource(resource['cidme:entityContexts'][0], entityContextDataGroupResource)
+    resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0] = cidme.addMetaDataGroupToResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0], metaDataGroupResource)
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextData[0].metadata[2], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'][2], options)).toBe(true)
 })
 
-test('Test adding MetadataGroup to EntityContextDataGroup via addResourceToParent', () => {
+test('Test adding MetaDataGroup to EntityContextDataGroup via addResourceToParent', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource(entityContextResource['@id'])
-    let metadataGroupResource = cidme.createMetadataGroupResource(entityContextDataGroupResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextDataGroupResource = cidme.createEntityContextDataGroupResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
 
     resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0]['@id'], resource, entityContextDataGroupResource)
-    resource = cidme.addResourceToParent(resource.entityContexts[0].entityContextData[0]['@id'], resource, metadataGroupResource)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, entityContextDataGroupResource, 'cidme:entityContextDataGroups')
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], resource, metaDataGroupResource, 'cidme:metaDataGroups')
 
     expect(cidme.validate(resource)).toBe(true)
     expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextData[0].metadata[2], options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'][1], options)).toBe(true)
 })
 
 test('Test addEntityContextDataGroupToResource - BAD: pass EntityContext resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextResource(entityContextResource['@id'])
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextDataGroupResource = cidme.createEntityContextResource()
 
     resource = cidme.addEntityContextToResource(resource, entityContextResource)
 
     expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource)
-
-        /* Stop StandardJS from complaining */
-        if (resource || options) { /* */ }
-    }).toThrow()
-})
-
-test('Test addEntityContextDataGroupToResource - BAD: pass EntityContextLinkGroup resource', () => {
-    let options = []
-
-    let resource = cidme.createEntityResource()
-    let entityContextResource = cidme.createEntityContextResource(resource['@id'])
-    let entityContextDataGroupResource = cidme.createEntityContextLinkGroupResource(entityContextResource['@id'])
-
-    resource = cidme.addEntityContextToResource(resource, entityContextResource)
-
-    expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource.entityContexts[0], entityContextDataGroupResource)
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextDataGroupToResource(resource['cidme:entityContexts'][0], entityContextDataGroupResource)
 
         /* Stop StandardJS from complaining */
         if (resource || options) { /* */ }
@@ -1472,2126 +1716,676 @@ test('Test addEntityContextDataGroupToResource - BAD: null resource', () => {
     let options = []
 
     let resource = cidme.createEntityResource()
-    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource(resource['@id']))
+    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource())
 
     expect(() => {
-        resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(null, cidme.createEntityContextDataGroupResource(resource.entityContexts[0]['@id']))
-    }).toThrow()
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextDataGroupToResource(null, cidme.createEntityContextDataGroupResource())
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+        /* Stop StandardJS from complaining */
+        if (resource || options) { /* */ }
+    }).toThrow()
 })
 
-test('Test addEntityContextDataGroupToResource - BAD: null MetadataGroup', () => {
-        let options = []
+test('Test addEntityContextDataGroupToResource - BAD: null MetaDataGroup', () => {
+    let options = []
 
-        let resource = cidme.createEntityResource()
-        resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource(resource['@id']))
+    let resource = cidme.createEntityResource()
+    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource())
 
-        expect(() => {
-            resource.entityContexts[0] = cidme.addEntityContextDataGroupToResource(resource, null)
+    expect(() => {
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextDataGroupToResource(resource, null)
 
-            /* Stop StandardJS from complaining */
-            if (resource || options) { /* */ }
-        }).toThrow()
-    })
-    /* ************************************************************************** */
+        /* Stop StandardJS from complaining */
+        if (resource || options) { /* */ }
+    }).toThrow()
+})
+
+test('Test addEntityContextLinkDataGroupToResource to EntityContext resource', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextLinkDataGroupResource = cidme.createEntityContextLinkDataGroupResource()
+
+    resource = cidme.addEntityContextToResource(resource, entityContextResource)
+    resource['cidme:entityContexts'][0] = cidme.addEntityContextLinkDataGroupToResource(resource['cidme:entityContexts'][0], entityContextLinkDataGroupResource)
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityResource(resource, options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0], options)).toBe(true)
+})
+
+test('Test adding EntityContextLinkDataGroup to EntityContext via addResourceToParent', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextLinkDataGroupResource = cidme.createEntityContextLinkDataGroupResource()
+
+    resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, entityContextLinkDataGroupResource, 'cidme:entityContextLinkDataGroups')
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityResource(resource, options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0], options)).toBe(true)
+})
+
+test('Test addMetaDataGroupToResource to EntityContextLinkDataGroup resource', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextLinkDataGroupResource = cidme.createEntityContextLinkDataGroupResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
+
+    resource = cidme.addEntityContextToResource(resource, entityContextResource)
+    resource['cidme:entityContexts'][0] = cidme.addEntityContextLinkDataGroupToResource(resource['cidme:entityContexts'][0], entityContextLinkDataGroupResource)
+    resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0] = cidme.addMetaDataGroupToResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0], metaDataGroupResource)
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityResource(resource, options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'][2], options)).toBe(true)
+})
+
+test('Test adding MetaDataGroup to EntityContextLinkDataGroup via addResourceToParent', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextLinkDataGroupResource = cidme.createEntityContextLinkDataGroupResource()
+    let metaDataGroupResource = cidme.createMetaDataGroupResource()
+
+    resource = cidme.addResourceToParent(resource['@id'], resource, entityContextResource)
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['@id'], resource, entityContextLinkDataGroupResource, 'cidme:entityContextLinkDataGroups')
+    resource = cidme.addResourceToParent(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], resource, metaDataGroupResource, 'cidme:metaDataGroups')
+
+    expect(cidme.validate(resource)).toBe(true)
+    expect(validateEntityResource(resource, options)).toBe(true)
+    expect(validateEntityContextResource(resource['cidme:entityContexts'][0], options)).toBe(true)
+    expect(validateEntityContextLinkDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0], options)).toBe(true)
+    expect(validateMetaDataGroupResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'][1], options)).toBe(true)
+})
+
+test('Test addEntityContextLinkDataGroupToResource - BAD: pass EntityContext resource', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    let entityContextResource = cidme.createEntityContextResource()
+    let entityContextLinkDataGroupResource = cidme.createEntityContextResource()
+
+    resource = cidme.addEntityContextToResource(resource, entityContextResource)
+
+    expect(() => {
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextLinkDataGroupToResource(resource['cidme:entityContexts'][0], entityContextLinkDataGroupResource)
+
+        /* Stop StandardJS from complaining */
+        if (resource || options) { /* */ }
+    }).toThrow()
+})
+
+test('Test addEntityContextLinkDataGroupToResource - BAD: null resource', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource())
+
+    expect(() => {
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextLinkDataGroupToResource(null, cidme.createEntityContextLinkDataGroupResource())
+
+        /* Stop StandardJS from complaining */
+        if (resource || options) { /* */ }
+    }).toThrow()
+})
+
+test('Test addEntityContextLinkDataGroupToResource - BAD: null MetaDataGroup', () => {
+    let options = []
+
+    let resource = cidme.createEntityResource()
+    resource = cidme.addEntityContextToResource(resource, cidme.createEntityContextResource())
+
+    expect(() => {
+        resource['cidme:entityContexts'][0] = cidme.addEntityContextLinkDataGroupToResource(resource, null)
+
+        /* Stop StandardJS from complaining */
+        if (resource || options) { /* */ }
+    }).toThrow()
+})
 
 /* ************************************************************************** */
-// Validate externally-created resource
 
-test('Validate externally-created basic Entity w/no metadata', () => {
-    let options = []
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34'
-    }
+/* ************************************************************************** */
+// Test complete/complex entity creation
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+test('Create and validate CIDME Example Resource Entity V0.6.0', () => {
+
+    let resource = createCidmeExampleResourceEntity()
 
     expect(cidme.validate(resource)).toBe(true)
-})
-
-test('Validate externally-created basic Entity', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
+        // Entity
+    expect(typeof resource).toBe('object')
+    expect(typeof resource['@type']).toBe('string')
+    expect(resource['@type']).toBe('cidme:Entity')
+    expect(typeof resource['@id']).toBe('string')
+        // Entity MetaData #1-#4
+    for (let i = 0; i <= 3; i++) {
+        expect(typeof resource['cidme:metaDataGroups'][i]).toBe('object')
+        expect(typeof resource['cidme:metaDataGroups'][i]['@type']).toBe('string')
+        expect(resource['cidme:metaDataGroups'][i]['@type']).toBe('cidme:MetaDataGroup')
+        expect(typeof resource['cidme:metaDataGroups'][i]['@id']).toBe('string')
+    }
+    // Entity Contexts #1-#3
+    for (let i = 0; i <= 2; i++) {
+        expect(typeof resource['cidme:entityContexts'][i]).toBe('object')
+        expect(typeof resource['cidme:entityContexts'][i]['@type']).toBe('string')
+        expect(resource['cidme:entityContexts'][i]['@type']).toBe('cidme:EntityContext')
+        expect(typeof resource['cidme:entityContexts'][i]['@id']).toBe('string')
+            // Entity Contexts #1-#3 MetaData #1-#3
+        for (let i2 = 0; i2 <= 2; i2++) {
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@type']).toBe('cidme:MetaDataGroup')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@id']).toBe('string')
+        }
+        // Entity Contexts #1-#3 EntityContextData #1
+        for (let i2 = 0; i2 <= 0; i2++) {
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@type']).toBe('cidme:EntityContextDataGroup')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@id']).toBe('string')
+                // Entity Contexts #1-#3 EntityContextData #1 MetaData #1-#3
+            for (let i3 = 0; i3 <= 2; i3++) {
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]).toBe('object')
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('string')
+                expect(resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('cidme:MetaDataGroup')
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@id']).toBe('string')
             }
-        ]
-    }
-
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic Entity w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
+        }
+        // Entity Contexts #1-#3 EntityContextLinkData #1
+        for (let i2 = 0; i2 <= 0; i2++) {
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@type']).toBe('cidme:EntityContextLinkDataGroup')
+            expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@id']).toBe('string')
+                // Entity Contexts #1-#3 EntityContextData #1 MetaData #1-#3
+            for (let i3 = 0; i3 <= 2; i3++) {
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]).toBe('object')
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('string')
+                expect(resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('cidme:MetaDataGroup')
+                expect(typeof resource['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@id']).toBe('string')
             }
-        ]
+        }
     }
-
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic Entity - BAD: with extra data', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'extra': 'Extra stuff here.'
-    }
-
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
-
-    expect(cidme.validate(resource)).toBe(false)
-})
-
-test('Validate externally-created basic EntityContext w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContext',
-        '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic EntityContext', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContext',
-        '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
+    // Entity Context #1 Entity Contexts #1a-#1b
+    for (let i = 0; i <= 1; i++) {
+        expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]).toBe('object')
+        expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['@type']).toBe('string')
+        expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['@type']).toBe('cidme:EntityContext')
+        expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['@id']).toBe('string')
+            // Entity Context #1 Entity Contexts #1a-#1b MetaData #1-#3
+        for (let i2 = 0; i2 <= 2; i2++) {
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@type']).toBe('cidme:MetaDataGroup')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:metaDataGroups'][i2]['@id']).toBe('string')
+        }
+        // Entity Context #1 Entity Contexts #1a-#1b EntityContextData #1
+        for (let i2 = 0; i2 <= 0; i2++) {
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@type']).toBe('cidme:EntityContextDataGroup')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['@id']).toBe('string')
+                // Entity Context #1 Entity Contexts #1a-#1b EntityContextData #1 MetaData #1-#3
+            for (let i3 = 0; i3 <= 2; i3++) {
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]).toBe('object')
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('string')
+                expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('cidme:MetaDataGroup')
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextDataGroups'][i2]['cidme:metaDataGroups'][i3]['@id']).toBe('string')
             }
-        ]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic EntityContext w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContext',
-        '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
+        }
+        // Entity Context #1 Entity Contexts #1a-#1b EntityContextLinkData #1
+        for (let i2 = 0; i2 <= 0; i2++) {
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]).toBe('object')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@type']).toBe('string')
+            expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@type']).toBe('cidme:EntityContextLinkDataGroup')
+            expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['@id']).toBe('string')
+                // Entity Context #1 Entity Contexts #1a-#1b EntityContextLinkData #1 MetaData #1-#3
+            for (let i3 = 0; i3 <= 2; i3++) {
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]).toBe('object')
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('string')
+                expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@type']).toBe('cidme:MetaDataGroup')
+                expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContexts'][i]['cidme:entityContextLinkDataGroups'][i2]['cidme:metaDataGroups'][i3]['@id']).toBe('string')
             }
-        ]
+        }
     }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextResource(resource, options)).toBe(true)
 })
 
-test('Validate externally-created basic EntityContext - BAD: with extra data', () => {
-    let options = []
+/* ************************************************************************** */
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContext',
-        '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-        'extra': 'Extra stuff here.'
-    }
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+/* ************************************************************************** */
+// Test delete resource function
 
-    expect(cidme.validate(resource)).toBe(false)
+test('Test deleteResource() - Entity MetaDataGroup', () => {
+
+    let resource = createCidmeExampleResourceEntity()
+
+    let oldCnt = resource['cidme:metaDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:metaDataGroups'][1]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:metaDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:metaDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
+test('Test deleteResource() - Entity MetaDataGroup data', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c'
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+    let oldCnt = resource['cidme:metaDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:metaDataGroups'][0]['cidme:data'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:metaDataGroups'][0]['cidme:data'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:metaDataGroups'][0]['cidme:data'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext', () => {
-    let options = []
+test('Test deleteResource() - EntityContext', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                }
-            ]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext w/CreatorId', () => {
-    let options = []
-    options.creatorId = creatorId
+test('Test deleteResource() - EntityContext MetaDataGroup', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/b3e4a853-ae11-467b-8d77-247309bf8c8f',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/5f2d7957-c79f-4585-8532-d2c5247f6f62',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                }
-            ]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:metaDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][1]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:metaDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:metaDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
+test('Test deleteResource() - EntityContext EntityContextData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup', () => {
-    let options = []
+test('Test deleteResource() - EntityContext EntityContextData data', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
+test('Test deleteResource() - EntityContext EntityContextData MetaData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup - with empty data array', () => {
-    let options = []
-    options.createMetadata = false
+test('Test deleteResource() - EntityContext EntityContextLinkData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'data': []
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup - with data', () => {
-    let options = []
-    options.createMetadata = false
-    options.hasEntityContextLinkGroupData = true
+test('Test deleteResource() - EntityContext EntityContextLinkData data', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'data': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup - with data - BAD: bad data', () => {
-    let options = []
-    options.createMetadata = false
-    options.hasEntityContextLinkGroupData = true
+test('Test deleteResource() - EntityContext EntityContextLinkData MetaData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'data': [{
-            'x': 'y'
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(false)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextLinkGroup - BAD: with extra data', () => {
-    let options = []
+test('Test deleteResource() - EntityContext EntityContext', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextLinkGroup',
-        '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'extra': 'Extra stuff here.'
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContexts'].length
+    let oldLength = JSON.stringify(resource).length
 
-    expect(cidme.validate(resource)).toBe(false)
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
+test('Test deleteResource() - EntityContext EntityContextData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
-            }]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup', () => {
-    let options = []
+test('Test deleteResource() - EntityContext EntityContextLinkData', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                }
-            ],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    resource = cidme.deleteResource(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length).toBe(oldCnt - 1)
+    expect(resource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length).toBeGreaterThan(0)
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup - with data', () => {
-    let options = []
-    options.hasEntityContextLinkGroupData = true
+test('Test deleteResource() - Entity MetaDataGroup ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                }
-            ],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    }
-                ],
-                'data': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-                }]
-            }]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
+    let oldCnt = resource['cidme:metaDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:metaDataGroups'][0]['@id']
+    let id2 = resource['cidme:metaDataGroups'][1]['@id']
+    let id3 = resource['cidme:metaDataGroups'][2]['@id']
+    let id4 = resource['cidme:metaDataGroups'][3]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+    resource = cidme.deleteResource(id3, resource)
+    resource = cidme.deleteResource(id4, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:metaDataGroups']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
+test('Test deleteResource() - Entity MetaDataGroup data ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/8350c887-c142-4e24-8317-3cb08780bfa8',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                }
-            ],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/9de1438c-c7e7-4140-9227-299646977336',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
+    let oldCnt = resource['cidme:metaDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:metaDataGroups'][0]['cidme:data'][0]['@id']
+    let id2 = resource['cidme:metaDataGroups'][0]['cidme:data'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:metaDataGroups'][0]['cidme:data']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
+test('Test deleteResource() - Entity EntityContexts ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][1]['@id']
+    let id3 = resource['cidme:entityContexts'][2]['@id']
+        //let id4 = resource['cidme:entityContexts'][3]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+    resource = cidme.deleteResource(id3, resource)
+        //resource = cidme.deleteResource(id4, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup', () => {
-    let options = []
+test('Test deleteResource() - Entity EntityContext MetaDataGroups data ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['cidme:data'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['cidme:data'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['cidme:data']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
+test('Test deleteResource() - Entity EntityContext EntityContextDataGroups ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup - with data', () => {
-    let options = []
-    options.createMetadata = false
-    options.hasEntityContextDataGroupData = true
+test('Test deleteResource() - Entity EntityContext EntityContextDataGroups data ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'data': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            'cidmeUri': 'cidme://public/EntityContext/88a9724e-4b38-4cd8-80a3-70e7c0c1d1bf'
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource, options)).toBe(true)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:data']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup - with data - BAD: bad data', () => {
-    let options = []
-    options.createMetadata = false
-    options.hasEntityContextDataGroupData = true
+test('Test deleteResource() - Entity EntityContext EntityContextLinkDataGroups ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-        'data': [{
-            'x': 'y'
-        }]
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    expect(cidme.validate(resource)).toBe(false)
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'].length
+    let oldLength = JSON.stringify(resource).length
+
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup - BAD: with extra data', () => {
-    let options = []
+test('Test deleteResource() - Entity EntityContext EntityContextLinkDataGroups data ALL', () => {
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-        'extra': 'Extra stuff here.'
-    }
+    let resource = createCidmeExampleResourceEntity()
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+    let oldCnt = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'].length
+    let oldLength = JSON.stringify(resource).length
 
-    expect(cidme.validate(resource)).toBe(false)
+    //console.log(JSON.stringify(resource))
+
+    let id1 = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'][0]['@id']
+    let id2 = resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data'][1]['@id']
+    resource = cidme.deleteResource(id1, resource)
+    resource = cidme.deleteResource(id2, resource)
+
+    //console.log(JSON.stringify(resource))
+
+    expect(typeof resource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:data']).toBe('undefined')
+    expect(JSON.stringify(resource).length).toBeLessThan(oldLength)
 })
 
-test('Validate externally-created basic EntityContextDataGroup - with empty data array', () => {
-    let options = []
+/* ************************************************************************** */
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'EntityContextDataGroup',
-        '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-        'data': []
-    }
 
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
+/* ************************************************************************** */
 
-    expect(cidme.validate(resource)).toBe(true)
-})
+// TODO TODO TODO - Add tests for trying to add resources to places they don't belong...
+// For example, add an EntityContextDataGroup to an Entity resource...
 
-test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
+/* ************************************************************************** */
 
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
-            }]
-        }]
-    }
 
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
+/* ************************************************************************** */
 
-test('Validate externally-created Entity/EntityContext/EntityContextDataGroup', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                }
-            ],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextDataGroup w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                }
-            ],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/EntityContextDataGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827'
-            }],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521'
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/EntityContextDataGroup', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': null
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': null
-                    }]
-                }
-            ],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    }
-                ]
-            }],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': null
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextLinkGroup/EntityContextDataGroup w/creatorId', () => {
-    let options = []
-    options.creatorId = creatorId
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'CreatedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'created': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            },
-            {
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/20ea2712-5f0e-4c96-bfc1-7dbc9eaa91ef',
-                'groupDataType': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'LastModifiedMetadata'
-                }],
-                'data': [{
-                    '@context': {
-                        '@vocab': 'http://purl.org/dc/terms/'
-                    },
-                    'modified': '2020-02-01T09:30:00.000Z',
-                    'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                }]
-            }
-        ],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/65809583-e337-44ba-ae71-aaeb6057019e',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'CreatedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'created': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                },
-                {
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/842c7a9d-d26f-4ee2-8b73-db191ff9395a',
-                    'groupDataType': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'LastModifiedMetadata'
-                    }],
-                    'data': [{
-                        '@context': {
-                            '@vocab': 'http://purl.org/dc/terms/'
-                        },
-                        'modified': '2020-02-01T09:30:00.000Z',
-                        'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                    }]
-                }
-            ],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/71c18cf6-4ec5-41fc-ac7c-85f78141fe51',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    }
-                ]
-            }],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-                'metadata': [{
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/75d033d2-e951-46cb-816b-d1147a9c45bb',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'CreatedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'created': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    },
-                    {
-                        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                        '@type': 'MetadataGroup',
-                        '@id': 'cidme://local/MetadataGroup/1f5676ae-00a6-4bf5-a27e-dfd40b0fefda',
-                        'groupDataType': [{
-                            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                            '@type': 'LastModifiedMetadata'
-                        }],
-                        'data': [{
-                            '@context': {
-                                '@vocab': 'http://purl.org/dc/terms/'
-                            },
-                            'modified': '2020-02-01T09:30:00.000Z',
-                            'creator': 'cidme://public/EntityContext/db9b4bdb-50b7-483d-95a6-b3884ecd4137'
-                        }]
-                    }
-                ]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-})
-
-test('Validate externally-created basic MetadataGroup w/no metadata', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'MetadataGroup',
-        '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic MetadataGroup - with empty data array', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'MetadataGroup',
-        '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
-        'data': []
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
-})
-
-test('Validate externally-created basic MetadataGroup - BAD: with extra data', () => {
-    let options = []
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'MetadataGroup',
-        '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
-        'extra': 'Extra stuff here.'
-    }
-
-    /* Stop StandardJS from complaining */
-    if (options) { /* */ }
-
-    expect(cidme.validate(resource)).toBe(false)
-})
-
-test('Validate externally-created nested MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'MetadataGroup',
-        '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/86c8edcf-93d5-4c57-b3f0-c59554fe07ec'
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-        }],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextData/MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-        }],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
-            }],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
-                }]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].metadata[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextData[0].metadata[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextLink/MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-        }],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
-            }],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
-                }]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].metadata[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextLinks[0].metadata[0], options)).toBe(true)
-})
-
-test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityContextData/MetadataGroup', () => {
-    let options = []
-    options.createMetadata = false
-
-    let resource = {
-        '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-        '@type': 'Entity',
-        '@id': 'cidme://local/Entity/38266203-4194-4136-a59a-50fcc7c4da34',
-        'metadata': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'MetadataGroup',
-            '@id': 'cidme://local/MetadataGroup/3dfdc2e5-e1bd-4840-b618-c4146125ace8'
-        }],
-        'entityContexts': [{
-            '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-            '@type': 'EntityContext',
-            '@id': 'cidme://local/EntityContext/47a0f527-0482-498b-80ba-357021381f6c',
-            'metadata': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'MetadataGroup',
-                '@id': 'cidme://local/MetadataGroup/2a1f4a85-6219-45dd-aaba-515b163ca3ce'
-            }],
-            'entityContextLinks': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextLinkGroup',
-                '@id': 'cidme://local/EntityContextLinkGroup/08b17205-bb5c-4028-a04d-cc5542619827',
-                'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/0b91dbb7-0814-4b4a-8347-4dad29ba1239'
-                }]
-            }],
-            'entityContextData': [{
-                '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                '@type': 'EntityContextDataGroup',
-                '@id': 'cidme://local/EntityContextDataGroup/bac33cc9-c09e-43b3-8d63-f283047c7521',
-                'metadata': [{
-                    '@context': 'http://cidme.net/vocab/core/0.4.0/jsonldcontext.json',
-                    '@type': 'MetadataGroup',
-                    '@id': 'cidme://local/MetadataGroup/d9166d1d-b320-42a8-ac79-f3a732e94b7c'
-                }]
-            }]
-        }]
-    }
-
-    expect(cidme.validate(resource)).toBe(true)
-    expect(validateEntityResource(resource, options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.metadata[0], options)).toBe(true)
-    expect(validateEntityContextResource(resource.entityContexts[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].metadata[0], options)).toBe(true)
-    expect(validateEntityContextLinkGroupResource(resource.entityContexts[0].entityContextLinks[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextLinks[0].metadata[0], options)).toBe(true)
-    expect(validateEntityContextDataGroupResource(resource.entityContexts[0].entityContextData[0], options)).toBe(true)
-    expect(validateMetadataGroupResource(resource.entityContexts[0].entityContextData[0].metadata[0], options)).toBe(true)
-})
+// TODO TODO TODO - Add externally-created tests!
 
 /* ************************************************************************** */
 
@@ -3599,181 +2393,158 @@ test('Validate externally-created Entity/EntityContext/EntityContextLink/EntityC
 /* ************************************************************************** */
 // Test helper functions
 
-let testResource = { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "Entity", "@id": "cidme://local/Entity/4308edca-3788-4ab4-9d87-c5ec1c37705f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f96c7c3e-3970-44a4-91b0-c0c1789f34cf", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.119Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/17dfa7b0-4bdd-4e1f-9e03-4ab7f43b6259", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.122Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/44afa961-6946-4570-be4c-66b87947bb21", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/efa4bd4c-8103-4099-b74b-8b7a36eabef5", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:01.049Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c46a3b1-1ab3-4900-8b1b-c337b9b55991", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:01.050Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/3f9bb027-6d86-4300-8914-cbe801420e39", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "entityTypeMetadata", "entityType": "http://cidme.net/vocab/ext/0.1.0/ThingEntityType" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/082f8be8-f11d-469c-b2d0-85688d7702db", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:09.072Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/093d218d-1340-40a2-9042-c0b09fe0f962", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:09.072Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/b278c894-58fe-478b-99c4-a119651d3417", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dbc6bd2d-beae-4d75-9106-3b85e9ffb13d", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.123Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/a644c7de-0984-4f39-8bd6-1a78f1340314", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.124Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9370e2cb-5984-4e01-b66d-67f1141ee521", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #1 (DEFAULT) V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e4117745-ffe5-4d85-83b1-57ec4bfc3f1b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:04.132Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/557f52d1-fc6d-4668-9902-571ee74b9ebf", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:04.133Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d87c12b3-c722-489e-b800-9572e44c5cd1", "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "@type": "DefaultMetadata", "default": true }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6da1869c-0dc0-4786-84da-41b5bbb78434", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:12:42.094Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/274db826-f283-44cb-a9d0-b288fc1cb400", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:12:42.095Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/122634c3-e607-4472-acdc-e0e080919170", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd21e3b7-353e-4422-9d44-9a12e2961354", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:12.552Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c4f3fdd-1297-4a7e-99d2-8a660dbdeb9a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:12.552Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/454a13cc-07ee-4e17-ae81-6b01fc158544", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/99d3f8c2-894c-4ffb-9a9d-1adeb512c02a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:34.671Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/92d53725-7b46-4185-bbd4-e9eaab257d99", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:34.672Z", "creator": null }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/dd506b14-b1ff-4da5-87d5-2b733eaa3e2f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9e7f0cb-718c-4f61-b314-8fb8b989abbe", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.125Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e6a08810-2194-4e8b-9502-d2e0d3d5ba6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.126Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/593a5efc-0505-4c7a-8230-4b83b3755494", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/631d3879-0a26-4b3c-bec0-e8fa268f7325", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:17.376Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/87dd16ad-6952-4e57-9e06-94652c2d14d4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:17.376Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/6235f661-7c4a-4425-88f8-d69af0bdc0eb", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/72ec15ab-6dbf-483b-bbd8-e95d40995ec8", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:09.301Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/08234a49-38f2-4505-9559-abb5280dbf71", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:09.302Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/1976bf1c-6bbe-4238-b4e2-354108291a61", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/b16e9270-1214-42d3-91b2-c85e75ec68e1", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:15.929Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939f169b-3583-46da-81d9-000c12fa91b4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:15.929Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/23f111f9-557b-44be-ac6c-1cad12187b56", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/317b8f37-12ab-472e-bed2-ed5c48e54d76", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:22:32.971Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/1dc3af10-b127-40d4-823a-aad6e4bc8ff8", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:22:32.972Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f5f7202c-3e28-4d78-aee2-065d1bef7067", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cb057290-ef3d-41e4-a4d7-a72a161b54dc", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:23:26.599Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/39105a8d-c952-44d4-90b6-1b0f9111d37d", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:23:26.600Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/d404fd9e-3704-4ecc-be14-4ba31b0c8342", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939ea1b8-74d7-4056-8689-edc664fa32c1", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:26:46.545Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/0e4e1564-cf14-46e1-9601-b96531226723", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:26:46.545Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/39f30804-8025-44ea-9b73-af2016de4798", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/38f3a632-58a1-461e-ac7b-7f6d80f2faea", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:27:00.363Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd2e793b-a8b3-463d-95a2-b155e4262262", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:27:00.363Z", "creator": null }] }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/61b6918e-ca4e-46fc-bd4a-5aa0bd72cd65", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/811f35ac-9728-4e48-8932-1637e27e087a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cac1e39b-7cc9-4e02-9ddd-c77862ebc204", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/ba1c90c2-4b9d-4fec-9120-82641ad68719", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3 V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/89b95f5a-48a1-4b45-b574-da72696cc3a4", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:29.405Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/2744c833-489b-4918-b7a3-d480f885c3b6", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:29.406Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/cbc1ae2c-59c6-4398-af9f-7208c4f5972f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/beb7afdc-9c61-427b-b395-12278ffe6195", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:39.670Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9d3f6e9a-b60e-41a5-84d6-03799676349c", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:39.670Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/5aab590f-5aeb-4db0-b407-949b7cbd262b", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/04c4eeda-9634-40d2-92fb-84e09fee87a6", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:49.359Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/50872b88-3673-4dba-9598-d11300b39c6b", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:49.360Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/1e7b4196-1211-4de6-96bc-c15a8899a57c", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9c1d1e9-e238-4baa-8297-3dc18de66be0", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:28:30.454Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/7017fc45-6a7f-4629-ad05-e85211f902ab", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:28:30.455Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/977fec9a-e643-44d3-9533-02eb1057e6e7", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }, { "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3-A V0.3.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6832638b-7fe6-4cc1-9567-08c619cc6a43", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:09.687Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/013c74ed-ad06-4f61-9251-fc996e21c907", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:09.688Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/815b3bd3-f96c-46cd-a2ee-271abb5a1994", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e942a09-632c-4b12-aa0b-d72d6b835daa", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:41.750Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e89bc60-0cc8-4655-850f-5c4576c12fb3", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:41.750Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/76f124bd-9a79-4a51-ae5c-b5d1fc651fc0", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d49b236c-023f-4265-86a2-fe9bb3dc043f", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:30:01.345Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f452a384-e7bb-4239-9bc8-536bf8c5a75a", "data": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }, { "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:30:01.346Z", "creator": null }] }] }] }] }] }
-
 
 test('Test getResourceById - Invalid resource ID', () => {
-    expect(cidme.getResourceById('cidme://local/Entity/abccb1fd-fdf4-4384-b464-37221fea2199', testResource)).toBe(false)
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById('cidme://Entity/abccb1fd-fdf4-4384-b464-37221fea2199', testResource)).toBe(false)
 })
 
 test('Test getResourceById - Invalid resource ID 2', () => {
+    let testResource = createCidmeExampleResourceEntity()
     expect(() => {
         let returnVal = cidme.getResourceById('Test1234', testResource)
     }).toThrow()
 })
 
 test('Test getResourceById', () => {
+    let testResource = createCidmeExampleResourceEntity()
     expect(cidme.getResourceById(testResource['@id'], testResource)).toBe(testResource)
 })
 
-test('Test getResourceById - Entity Metadata', () => {
-    expect(cidme.getResourceById(testResource['metadata'][0]['@id'], testResource)).toBe(testResource['metadata'][0])
+test('Test getResourceById - Entity MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:metaDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:metaDataGroups'][0])
 })
 
 test('Test getResourceById - Entity Context', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0])
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0])
 })
 
-test('Test getResourceById - Entity Context Metadata', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['metadata'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0]['metadata'][0])
+test('Test getResourceById - Entity Context MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0])
 })
 
 test('Test getResourceById - Entity Context EntityContextData', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['entityContextData'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0]['entityContextData'][0])
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0])
 })
 
-test('Test getResourceById - Entity Context EntityContextData Metadata', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['entityContextData'][0]['metadata'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0]['entityContextData'][0]['metadata'][0])
+test('Test getResourceById - Entity Context EntityContextData MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContextDataGroups'][0]['cidme:metaDataGroups'][0])
 })
 
 test('Test getResourceById - Entity Context EntityContextLinks', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['entityContextLinks'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0]['entityContextLinks'][0])
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0])
 })
 
-test('Test getResourceById - Entity Context EntityContextLinks Metadata', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][0]['entityContextLinks'][0]['metadata'][0]['@id'], testResource)).toBe(testResource['entityContexts'][0]['entityContextLinks'][0]['metadata'][0])
+test('Test getResourceById - Entity Context EntityContextLinks MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContextLinkDataGroups'][0]['cidme:metaDataGroups'][0])
 })
 
 test('Test getResourceById - EntityContext EntityContext', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][1]['entityContexts'][0]['@id'], testResource)).toBe(testResource['entityContexts'][1]['entityContexts'][0])
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0])
 })
 
-test('Test getResourceById - EntityContext EntityContext Metadata', () => {
-    expect(cidme.getResourceById(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0]['@id'], testResource)).toBe(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0])
+test('Test getResourceById - EntityContext EntityContext MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    expect(cidme.getResourceById(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'], testResource)).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0])
 })
+
 
 test('Test getResourceByIdWithBreadcrumbs - Entity', () => {
+    let testResource = createCidmeExampleResourceEntity()
     let x = cidme.getResourceByIdWithBreadcrumbs(testResource['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
     expect(x['cidmeResource']).toBe(testResource);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(1)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
 })
 
-test('Test getResourceByIdWithBreadcrumbs - Entity Metadata', () => {
-    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['metadata'][0]['@id'], testResource);
+test('Test getResourceByIdWithBreadcrumbs - Entity MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['cidme:metaDataGroups'][0]['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
-    expect(x['cidmeResource']).toBe(testResource['metadata'][0]);
+    expect(x['cidmeResource']).toBe(testResource['cidme:metaDataGroups'][0]);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(2)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['metadata'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['metadata'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['cidme:metaDataGroups'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['cidme:metaDataGroups'][0]['@id'])
 })
 
 test('Test getResourceByIdWithBreadcrumbs - EntityContext', () => {
-    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['entityContexts'][0]['@id'], testResource);
+    let testResource = createCidmeExampleResourceEntity()
+    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['cidme:entityContexts'][0]['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
-    expect(x['cidmeResource']).toBe(testResource['entityContexts'][0]);
+    expect(x['cidmeResource']).toBe(testResource['cidme:entityContexts'][0]);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(2)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['entityContexts'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['@id'])
 })
 
-test('Test getResourceByIdWithBreadcrumbs - EntityContext Metadata', () => {
-    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['entityContexts'][0]['metadata'][0]['@id'], testResource);
+test('Test getResourceByIdWithBreadcrumbs - EntityContext MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
-    expect(x['cidmeResource']).toBe(testResource['entityContexts'][0]['metadata'][0]);
+    expect(x['cidmeResource']).toBe(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(3)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['entityContexts'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['entityContexts'][0]['@id'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['entityContexts'][0]['metadata'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['entityContexts'][0]['metadata'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'])
 })
 
 test('Test getResourceByIdWithBreadcrumbs - EntityContext EntityContext', () => {
-    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['entityContexts'][1]['entityContexts'][0]['@id'], testResource);
+    let testResource = createCidmeExampleResourceEntity()
+    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
-    expect(x['cidmeResource']).toBe(testResource['entityContexts'][1]['entityContexts'][0]);
+    expect(x['cidmeResource']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(3)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['entityContexts'][1]['@type'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['entityContexts'][1]['@id'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'])
 })
 
-test('Test getResourceByIdWithBreadcrumbs - EntityContext EntityContext Metadata', () => {
-    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0]['@id'], testResource);
+test('Test getResourceByIdWithBreadcrumbs - EntityContext EntityContext MetaData', () => {
+    let testResource = createCidmeExampleResourceEntity()
+    let x = cidme.getResourceByIdWithBreadcrumbs(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'], testResource);
     expect(typeof x).toBe('object')
     expect(typeof x['cidmeResource']).toBe('object')
-    expect(x['cidmeResource']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0]);
+    expect(x['cidmeResource']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]);
     expect(typeof x['cidmeBreadcrumbs']).toBe('object')
     expect(x['cidmeBreadcrumbs'].length).toBe(4)
-    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('Entity')
+    expect(x['cidmeBreadcrumbs'][0]['cidmeResourceType']).toBe('cidme:Entity')
     expect(x['cidmeBreadcrumbs'][0]['cidmeResourceId']).toBe(testResource['@id'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['entityContexts'][1]['@type'])
-    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['entityContexts'][1]['@id'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['@id'])
-    expect(x['cidmeBreadcrumbs'][3]['cidmeResourceType']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0]['@type'])
-    expect(x['cidmeBreadcrumbs'][3]['cidmeResourceId']).toBe(testResource['entityContexts'][1]['entityContexts'][0]['metadata'][0]['@id'])
-})
-
-/* ************************************************************************** */
-
-
-/* ************************************************************************** */
-// Test jsonld functions
-
-let cidmeJsonld = new Cidme(ajv, UUID, jsonld)
-
-let testResource2 = { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "Entity", "@id": "cidme://local/Entity/4308edca-3788-4ab4-9d87-c5ec1c37705f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f96c7c3e-3970-44a4-91b0-c0c1789f34cf", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.119Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/17dfa7b0-4bdd-4e1f-9e03-4ab7f43b6259", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.122Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/44afa961-6946-4570-be4c-66b87947bb21", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/efa4bd4c-8103-4099-b74b-8b7a36eabef5", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:01.049Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c46a3b1-1ab3-4900-8b1b-c337b9b55991", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:01.050Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/3f9bb027-6d86-4300-8914-cbe801420e39", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "entityTypeMetadata" }], "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "entityType": "http://cidme.net/vocab/ext/0.1.0/ThingEntityType" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/082f8be8-f11d-469c-b2d0-85688d7702db", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:09.072Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/093d218d-1340-40a2-9042-c0b09fe0f962", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:09.072Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/b278c894-58fe-478b-99c4-a119651d3417", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dbc6bd2d-beae-4d75-9106-3b85e9ffb13d", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.123Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/a644c7de-0984-4f39-8bd6-1a78f1340314", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.124Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9370e2cb-5984-4e01-b66d-67f1141ee521", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #1 (DEFAULT) V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e4117745-ffe5-4d85-83b1-57ec4bfc3f1b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:04.132Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/557f52d1-fc6d-4668-9902-571ee74b9ebf", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:04.133Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d87c12b3-c722-489e-b800-9572e44c5cd1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "DefaultMetadata" }], "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "default": true }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6da1869c-0dc0-4786-84da-41b5bbb78434", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:12:42.094Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/274db826-f283-44cb-a9d0-b288fc1cb400", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:12:42.095Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/122634c3-e607-4472-acdc-e0e080919170", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd21e3b7-353e-4422-9d44-9a12e2961354", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:12.552Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c4f3fdd-1297-4a7e-99d2-8a660dbdeb9a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:12.552Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/454a13cc-07ee-4e17-ae81-6b01fc158544", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/99d3f8c2-894c-4ffb-9a9d-1adeb512c02a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:34.671Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/92d53725-7b46-4185-bbd4-e9eaab257d99", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:34.672Z", "creator": null }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/dd506b14-b1ff-4da5-87d5-2b733eaa3e2f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9e7f0cb-718c-4f61-b314-8fb8b989abbe", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.125Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e6a08810-2194-4e8b-9502-d2e0d3d5ba6b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.126Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/593a5efc-0505-4c7a-8230-4b83b3755494", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2 V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/631d3879-0a26-4b3c-bec0-e8fa268f7325", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:17.376Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/87dd16ad-6952-4e57-9e06-94652c2d14d4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:17.376Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/6235f661-7c4a-4425-88f8-d69af0bdc0eb", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/72ec15ab-6dbf-483b-bbd8-e95d40995ec8", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:09.301Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/08234a49-38f2-4505-9559-abb5280dbf71", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:09.302Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/1976bf1c-6bbe-4238-b4e2-354108291a61", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/b16e9270-1214-42d3-91b2-c85e75ec68e1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:15.929Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939f169b-3583-46da-81d9-000c12fa91b4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:15.929Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/23f111f9-557b-44be-ac6c-1cad12187b56", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/317b8f37-12ab-472e-bed2-ed5c48e54d76", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:22:32.971Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/1dc3af10-b127-40d4-823a-aad6e4bc8ff8", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:22:32.972Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f5f7202c-3e28-4d78-aee2-065d1bef7067", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2-A V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cb057290-ef3d-41e4-a4d7-a72a161b54dc", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:23:26.599Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/39105a8d-c952-44d4-90b6-1b0f9111d37d", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:23:26.600Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/d404fd9e-3704-4ecc-be14-4ba31b0c8342", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939ea1b8-74d7-4056-8689-edc664fa32c1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:26:46.545Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/0e4e1564-cf14-46e1-9601-b96531226723", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:26:46.545Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/39f30804-8025-44ea-9b73-af2016de4798", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/38f3a632-58a1-461e-ac7b-7f6d80f2faea", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:27:00.363Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd2e793b-a8b3-463d-95a2-b155e4262262", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:27:00.363Z", "creator": null }] }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/61b6918e-ca4e-46fc-bd4a-5aa0bd72cd65", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/811f35ac-9728-4e48-8932-1637e27e087a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cac1e39b-7cc9-4e02-9ddd-c77862ebc204", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/ba1c90c2-4b9d-4fec-9120-82641ad68719", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3 V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/89b95f5a-48a1-4b45-b574-da72696cc3a4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:29.405Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/2744c833-489b-4918-b7a3-d480f885c3b6", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:29.406Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/cbc1ae2c-59c6-4398-af9f-7208c4f5972f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/beb7afdc-9c61-427b-b395-12278ffe6195", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:39.670Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9d3f6e9a-b60e-41a5-84d6-03799676349c", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:39.670Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/5aab590f-5aeb-4db0-b407-949b7cbd262b", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/04c4eeda-9634-40d2-92fb-84e09fee87a6", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:49.359Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/50872b88-3673-4dba-9598-d11300b39c6b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:49.360Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/1e7b4196-1211-4de6-96bc-c15a8899a57c", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9c1d1e9-e238-4baa-8297-3dc18de66be0", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:28:30.454Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/7017fc45-6a7f-4629-ad05-e85211f902ab", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:28:30.455Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/977fec9a-e643-44d3-9533-02eb1057e6e7", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3-A V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6832638b-7fe6-4cc1-9567-08c619cc6a43", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:09.687Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/013c74ed-ad06-4f61-9251-fc996e21c907", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:09.688Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/815b3bd3-f96c-46cd-a2ee-271abb5a1994", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e942a09-632c-4b12-aa0b-d72d6b835daa", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:41.750Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e89bc60-0cc8-4655-850f-5c4576c12fb3", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:41.750Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/76f124bd-9a79-4a51-ae5c-b5d1fc651fc0", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d49b236c-023f-4265-86a2-fe9bb3dc043f", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:30:01.345Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f452a384-e7bb-4239-9bc8-536bf8c5a75a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:30:01.346Z", "creator": null }] }] }] }] }] }
-
-test('Test getResourceGroupDataTypeNQuads', () => {
-    // console.log(testResource2['metadata'][1])
-
-    return cidmeJsonld.getResourceGroupDataTypeNQuads(testResource2['metadata'][0]).then(data => {
-        //console.log(data)
-        expect(typeof data).toBe('string')
-        expect(data.trim()).toBe('_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://cidme.net/vocab/core/0.4.0/CreatedMetadata/CreatedMetadata.jsonld> .')
-    })
-})
-
-/* ************************************************************************** */
-
-
-/* ************************************************************************** */
-// Test N3 functions
-
-let cidmeN3 = new Cidme(ajv, UUID, jsonld, N3)
-
-let testResource3 = { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "Entity", "@id": "cidme://local/Entity/4308edca-3788-4ab4-9d87-c5ec1c37705f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f96c7c3e-3970-44a4-91b0-c0c1789f34cf", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.119Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/17dfa7b0-4bdd-4e1f-9e03-4ab7f43b6259", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.122Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/44afa961-6946-4570-be4c-66b87947bb21", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/efa4bd4c-8103-4099-b74b-8b7a36eabef5", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:01.049Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c46a3b1-1ab3-4900-8b1b-c337b9b55991", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:01.050Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/3f9bb027-6d86-4300-8914-cbe801420e39", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "entityTypeMetadata" }], "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "entityType": "http://cidme.net/vocab/ext/0.1.0/ThingEntityType" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/082f8be8-f11d-469c-b2d0-85688d7702db", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:23:09.072Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/093d218d-1340-40a2-9042-c0b09fe0f962", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:23:09.072Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/b278c894-58fe-478b-99c4-a119651d3417", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dbc6bd2d-beae-4d75-9106-3b85e9ffb13d", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.123Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/a644c7de-0984-4f39-8bd6-1a78f1340314", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.124Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9370e2cb-5984-4e01-b66d-67f1141ee521", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #1 (DEFAULT) V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e4117745-ffe5-4d85-83b1-57ec4bfc3f1b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:04.132Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/557f52d1-fc6d-4668-9902-571ee74b9ebf", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:04.133Z", "creator": null }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d87c12b3-c722-489e-b800-9572e44c5cd1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "DefaultMetadata" }], "data": [{ "@context": "http://cidme.net/vocab/ext/0.1.0/jsonldcontext.json", "default": true }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6da1869c-0dc0-4786-84da-41b5bbb78434", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:12:42.094Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/274db826-f283-44cb-a9d0-b288fc1cb400", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:12:42.095Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/122634c3-e607-4472-acdc-e0e080919170", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd21e3b7-353e-4422-9d44-9a12e2961354", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:12.552Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/8c4f3fdd-1297-4a7e-99d2-8a660dbdeb9a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:12.552Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/454a13cc-07ee-4e17-ae81-6b01fc158544", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/99d3f8c2-894c-4ffb-9a9d-1adeb512c02a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:44:34.671Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/92d53725-7b46-4185-bbd4-e9eaab257d99", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:44:34.672Z", "creator": null }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/dd506b14-b1ff-4da5-87d5-2b733eaa3e2f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9e7f0cb-718c-4f61-b314-8fb8b989abbe", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.125Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/e6a08810-2194-4e8b-9502-d2e0d3d5ba6b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.126Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/593a5efc-0505-4c7a-8230-4b83b3755494", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2 V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/631d3879-0a26-4b3c-bec0-e8fa268f7325", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:17.376Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/87dd16ad-6952-4e57-9e06-94652c2d14d4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:17.376Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/6235f661-7c4a-4425-88f8-d69af0bdc0eb", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/72ec15ab-6dbf-483b-bbd8-e95d40995ec8", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:09.301Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/08234a49-38f2-4505-9559-abb5280dbf71", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:09.302Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/1976bf1c-6bbe-4238-b4e2-354108291a61", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/b16e9270-1214-42d3-91b2-c85e75ec68e1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:15.929Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939f169b-3583-46da-81d9-000c12fa91b4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:15.929Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/23f111f9-557b-44be-ac6c-1cad12187b56", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/317b8f37-12ab-472e-bed2-ed5c48e54d76", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:22:32.971Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/1dc3af10-b127-40d4-823a-aad6e4bc8ff8", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:22:32.972Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f5f7202c-3e28-4d78-aee2-065d1bef7067", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #2-A V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cb057290-ef3d-41e4-a4d7-a72a161b54dc", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:23:26.599Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/39105a8d-c952-44d4-90b6-1b0f9111d37d", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:23:26.600Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/d404fd9e-3704-4ecc-be14-4ba31b0c8342", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/939ea1b8-74d7-4056-8689-edc664fa32c1", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:26:46.545Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/0e4e1564-cf14-46e1-9601-b96531226723", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:26:46.545Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/39f30804-8025-44ea-9b73-af2016de4798", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/38f3a632-58a1-461e-ac7b-7f6d80f2faea", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:27:00.363Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/dd2e793b-a8b3-463d-95a2-b155e4262262", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:27:00.363Z", "creator": null }] }] }] }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/61b6918e-ca4e-46fc-bd4a-5aa0bd72cd65", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/811f35ac-9728-4e48-8932-1637e27e087a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/cac1e39b-7cc9-4e02-9ddd-c77862ebc204", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:00:17.127Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/ba1c90c2-4b9d-4fec-9120-82641ad68719", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3 V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/89b95f5a-48a1-4b45-b574-da72696cc3a4", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-12T19:02:29.405Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/2744c833-489b-4918-b7a3-d480f885c3b6", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-12T19:02:29.406Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/cbc1ae2c-59c6-4398-af9f-7208c4f5972f", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/beb7afdc-9c61-427b-b395-12278ffe6195", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:39.670Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/9d3f6e9a-b60e-41a5-84d6-03799676349c", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:39.670Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/5aab590f-5aeb-4db0-b407-949b7cbd262b", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/04c4eeda-9634-40d2-92fb-84e09fee87a6", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-17T13:45:49.359Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/50872b88-3673-4dba-9598-d11300b39c6b", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-17T13:45:49.360Z", "creator": null }] }] }], "entityContexts": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContext", "@id": "cidme://local/EntityContext/1e7b4196-1211-4de6-96bc-c15a8899a57c", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/c9c1d1e9-e238-4baa-8297-3dc18de66be0", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:28:30.454Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/7017fc45-6a7f-4629-ad05-e85211f902ab", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:28:30.455Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/977fec9a-e643-44d3-9533-02eb1057e6e7", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LabelMetadata" }], "data": [{ "@context": { "@vocab": "http://www.w3.org/2004/02/skos/core#" }, "prefLabel": "CIDME Example Resource Entity EntityContext #3-A V0.4.0" }], "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6832638b-7fe6-4cc1-9567-08c619cc6a43", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:09.687Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/013c74ed-ad06-4f61-9251-fc996e21c907", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:09.688Z", "creator": null }] }] }], "entityContextData": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextDataGroup", "@id": "cidme://local/EntityContextDataGroup/815b3bd3-f96c-46cd-a2ee-271abb5a1994", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e942a09-632c-4b12-aa0b-d72d6b835daa", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:29:41.750Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/6e89bc60-0cc8-4655-850f-5c4576c12fb3", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:29:41.750Z", "creator": null }] }] }], "entityContextLinks": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "EntityContextLinkGroup", "@id": "cidme://local/EntityContextLinkGroup/76f124bd-9a79-4a51-ae5c-b5d1fc651fc0", "metadata": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/d49b236c-023f-4265-86a2-fe9bb3dc043f", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "CreatedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "created": "2020-01-19T18:30:01.345Z", "creator": null }] }, { "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "MetadataGroup", "@id": "cidme://local/MetadataGroup/f452a384-e7bb-4239-9bc8-536bf8c5a75a", "groupDataType": [{ "@context": "http://cidme.net/vocab/core/0.4.0/jsonldcontext.json", "@type": "LastModifiedMetadata" }], "data": [{ "@context": { "@vocab": "http://purl.org/dc/terms/" }, "modified": "2020-01-19T18:30:01.346Z", "creator": null }] }] }] }] }] }
-
-test('Test getResourceGroupDataTypeNQuads - with getPredicate', () => {
-    // console.log(testResource2['metadata'][1])
-
-    return cidmeN3.getResourceGroupDataTypeNQuads(testResource2['metadata'][0], true).then(data => {
-        //console.log(data)
-        expect(typeof data).toBe('string')
-        expect(data).toBe('http://cidme.net/vocab/core/0.4.0/CreatedMetadata/CreatedMetadata.jsonld')
-    })
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][1]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][2]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['@id'])
+    expect(x['cidmeBreadcrumbs'][3]['cidmeResourceType']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@type'])
+    expect(x['cidmeBreadcrumbs'][3]['cidmeResourceId']).toBe(testResource['cidme:entityContexts'][0]['cidme:entityContexts'][0]['cidme:metaDataGroups'][0]['@id'])
 })
 
 /* ************************************************************************** */
