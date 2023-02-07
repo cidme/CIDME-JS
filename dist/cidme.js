@@ -1530,7 +1530,7 @@ var Cidme = /** @class */ (function () {
      * @returns {(object|boolean)}
      */
     Cidme.prototype.getResourceByIdWithBreadcrumbs = function (resourceId, cidmeResource, cidmeBreadcrumbs) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         if (cidmeBreadcrumbs === void 0) { cidmeBreadcrumbs = []; }
         if (!resourceId || !cidmeResource) {
             throw new Error('ERROR:  Missing or invalid argument.');
@@ -1554,11 +1554,12 @@ var Cidme = /** @class */ (function () {
                 cidmeResourceType: cidmeResource['@type'],
                 cidmeResourceId: cidmeResource['@id']
             });
-            var returnVal2 = {
+            var returnVal2_1 = {
                 cidmeResource: cidmeResource,
-                cidmeBreadcrumbs: cidmeBreadcrumbs
+                cidmeBreadcrumbs: cidmeBreadcrumbs,
+                parsedUri: this.parseCidmeUri(cidmeResource['@id'])
             };
-            return returnVal2;
+            return returnVal2_1;
         }
         if (!cidmeResource['cidme:metaDataGroups']) { }
         else {
@@ -1570,11 +1571,12 @@ var Cidme = /** @class */ (function () {
                         cidmeResourceType: cidmeResource['@type'],
                         cidmeResourceId: cidmeResource['@id']
                     });
-                    var returnVal2 = {
+                    var returnVal2_2 = {
                         cidmeResource: returnVal['cidmeResource'],
-                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                        cidmeBreadcrumbs: cidmeBreadcrumbs,
+                        parsedUri: this.parseCidmeUri(returnVal['cidmeResource']['@id'])
                     };
-                    return returnVal2;
+                    return returnVal2_2;
                 }
             }
         }
@@ -1588,11 +1590,12 @@ var Cidme = /** @class */ (function () {
                         cidmeResourceType: cidmeResource['@type'],
                         cidmeResourceId: cidmeResource['@id']
                     });
-                    var returnVal2 = {
+                    var returnVal2_3 = {
                         cidmeResource: returnVal['cidmeResource'],
-                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                        cidmeBreadcrumbs: cidmeBreadcrumbs,
+                        parsedUri: this.parseCidmeUri(returnVal['cidmeResource']['@id'])
                     };
-                    return returnVal2;
+                    return returnVal2_3;
                 }
             }
         }
@@ -1606,11 +1609,12 @@ var Cidme = /** @class */ (function () {
                         cidmeResourceType: cidmeResource['@type'],
                         cidmeResourceId: cidmeResource['@id']
                     });
-                    var returnVal2 = {
+                    var returnVal2_4 = {
                         cidmeResource: returnVal['cidmeResource'],
-                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                        cidmeBreadcrumbs: cidmeBreadcrumbs,
+                        parsedUri: this.parseCidmeUri(returnVal['cidmeResource']['@id'])
                     };
-                    return returnVal2;
+                    return returnVal2_4;
                 }
             }
         }
@@ -1624,9 +1628,31 @@ var Cidme = /** @class */ (function () {
                         cidmeResourceType: cidmeResource['@type'],
                         cidmeResourceId: cidmeResource['@id']
                     });
-                    var returnVal2 = {
+                    var returnVal2_5 = {
                         cidmeResource: returnVal['cidmeResource'],
-                        cidmeBreadcrumbs: cidmeBreadcrumbs
+                        cidmeBreadcrumbs: cidmeBreadcrumbs,
+                        parsedUri: this.parseCidmeUri(returnVal['cidmeResource']['@id'])
+                    };
+                    return returnVal2_5;
+                }
+            }
+        }
+        if (!cidmeResource['cidme:data']) { }
+        else {
+            for (var i = 0; i < ((_e = cidmeResource['cidme:data']) === null || _e === void 0 ? void 0 : _e.length); i++) {
+                if (cidmeResource['cidme:data'][i]['@id'] === resourceId) {
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['cidme:data'][i]['@type'],
+                        cidmeResourceId: cidmeResource['cidme:data'][i]['@id']
+                    });
+                    cidmeBreadcrumbs.unshift({
+                        cidmeResourceType: cidmeResource['@type'],
+                        cidmeResourceId: cidmeResource['@id']
+                    });
+                    var returnVal2 = {
+                        cidmeResource: cidmeResource['cidme:data'][i],
+                        cidmeBreadcrumbs: cidmeBreadcrumbs,
+                        parsedUri: this.parseCidmeUri(cidmeResource['cidme:data'][i]['@id'])
                     };
                     return returnVal2;
                 }
