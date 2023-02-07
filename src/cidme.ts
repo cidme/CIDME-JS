@@ -1735,7 +1735,8 @@ class Cidme {
 
       let returnVal2 = {
         cidmeResource: cidmeResource,
-        cidmeBreadcrumbs: cidmeBreadcrumbs
+        cidmeBreadcrumbs: cidmeBreadcrumbs,
+        parsedUri:this.parseCidmeUri(cidmeResource['@id'])
       };
 
       return returnVal2;
@@ -1754,7 +1755,8 @@ class Cidme {
 
           let returnVal2 = {
             cidmeResource: returnVal['cidmeResource'],
-            cidmeBreadcrumbs: cidmeBreadcrumbs
+            cidmeBreadcrumbs: cidmeBreadcrumbs,
+            parsedUri:this.parseCidmeUri(returnVal['cidmeResource']['@id'])
           };
 
           return returnVal2;
@@ -1775,7 +1777,8 @@ class Cidme {
 
           let returnVal2 = {
             cidmeResource: returnVal['cidmeResource'],
-            cidmeBreadcrumbs: cidmeBreadcrumbs
+            cidmeBreadcrumbs: cidmeBreadcrumbs,
+            parsedUri:this.parseCidmeUri(returnVal['cidmeResource']['@id'])
           };
 
           return returnVal2;
@@ -1796,7 +1799,8 @@ class Cidme {
 
           let returnVal2 = {
             cidmeResource: returnVal['cidmeResource'],
-            cidmeBreadcrumbs: cidmeBreadcrumbs
+            cidmeBreadcrumbs: cidmeBreadcrumbs,
+            parsedUri:this.parseCidmeUri(returnVal['cidmeResource']['@id'])
           };
 
           return returnVal2;
@@ -1817,7 +1821,8 @@ class Cidme {
 
           let returnVal2 = {
             cidmeResource: returnVal['cidmeResource'],
-            cidmeBreadcrumbs: cidmeBreadcrumbs
+            cidmeBreadcrumbs: cidmeBreadcrumbs,
+            parsedUri:this.parseCidmeUri(returnVal['cidmeResource']['@id'])
           };
 
           return returnVal2;
@@ -1825,6 +1830,28 @@ class Cidme {
       }
     }
 
+    if (!cidmeResource['cidme:data']) { }
+    else {
+      for (let i:number = 0; i < cidmeResource['cidme:data']?.length; i++) {
+        if (cidmeResource['cidme:data'][i]['@id'] === resourceId) {
+          cidmeBreadcrumbs.unshift({
+              cidmeResourceType: cidmeResource['cidme:data'][i]['@type'],
+              cidmeResourceId: cidmeResource['cidme:data'][i]['@id']
+          });
+          cidmeBreadcrumbs.unshift({
+              cidmeResourceType: cidmeResource['@type'],
+              cidmeResourceId: cidmeResource['@id']
+          });
+          var returnVal2 = {
+              cidmeResource: cidmeResource['cidme:data'][i],
+              cidmeBreadcrumbs: cidmeBreadcrumbs,
+              parsedUri: this.parseCidmeUri(cidmeResource['cidme:data'][i]['@id'])
+          };
+          return returnVal2;
+        }
+      }
+    }
+            
     return false;
   }
 
