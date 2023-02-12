@@ -103,7 +103,7 @@ interface rdfVocabArray {
  * @author Joe Thielen <joe@joethielen.com>
  * @copyright Joe Thielen 2018-2023
  * @license MIT
- * @version 0.6.1
+ * @version 0.6.3
  */
 class Cidme {
   cidmeVersion:string
@@ -1121,11 +1121,98 @@ class Cidme {
   // CIDME RESOURCE MANIPULATION FUNCTIONS
 
 
+
   /**
    * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetaDataGroup, an EntityContext, or another type of resource.
    * @param {string} parentId - The '@id' of the resource to add to.
    * @param {object} cidmeResource - CIDME resource to add to.
    * @param {object} resourceToAdd - The resource to add.
+   * @returns {object}
+   */
+  addRdfDataToParent (parentId:string, cidmeResource:CidmeResource, resourceToAdd:CidmeRdfDataResource):CidmeResource {
+    if (!resourceToAdd || !this.validate(resourceToAdd)) {
+      throw new Error('ERROR:  Missing or invalid resourceToAdd.')
+    }
+    let resourceToAddType:string = this.parseCidmeUri(resourceToAdd['@id'])['resourceType']
+
+    if (!parentId || !cidmeResource || !resourceToAddType || !resourceToAdd) {
+      throw new Error('ERROR:  Missing or invalid argument.')
+    }
+
+    if (cidmeResource['@id'] === parentId) {
+      cidmeResource = this.addRdfDataToResource(cidmeResource, resourceToAdd)
+    }
+
+
+    // Cycle through metaDataGroups
+    if (cidmeResource['cidme:metaDataGroups']) {
+      for (let i:number = 0; i < cidmeResource['cidme:metaDataGroups'].length; i++) {
+        cidmeResource['cidme:metaDataGroups'][i] = this.addRdfDataToParent(parentId, cidmeResource['cidme:metaDataGroups'][i], resourceToAdd)
+      }
+    }
+
+    // Cycle through entityContexts
+    if (cidmeResource['cidme:entityContexts']) {
+      for (let i:number = 0; i < cidmeResource['cidme:entityContexts'].length; i++) {
+        cidmeResource['cidme:entityContexts'][i] = this.addRdfDataToParent(parentId, cidmeResource['cidme:entityContexts'][i], resourceToAdd)
+      }
+    }
+
+    // Cycle through entityContextDataGroups
+    if (cidmeResource['cidme:entityContextDataGroups']) {
+      for (let i:number = 0; i < cidmeResource['cidme:entityContextDataGroups'].length; i++) {
+        cidmeResource['cidme:entityContextDataGroups'][i] = this.addRdfDataToParent(parentId, cidmeResource['cidme:entityContextDataGroups'][i], resourceToAdd)
+      }
+    }
+
+    // Cycle through entityContextLinkataGroups
+    if (cidmeResource['cidme:entityContextLinkDataGroups']) {
+      for (let i:number = 0; i < cidmeResource['cidme:entityContextLinkDataGroups'].length; i++) {
+        cidmeResource['cidme:entityContextLinkDataGroups'][i] = this.addRdfDataToParent(parentId, cidmeResource['cidme:entityContextLinkDataGroups'][i], resourceToAdd)
+      }
+    }
+
+    return cidmeResource
+  }
+
+
+  /**
+   * Adds RdfData to an existing CIDME resource.
+   * @param {object} cidmeResource - CIDME resource to add DataGroup to.
+   * @param {object} dataGroup - DataGroup resource to add to CIDME resource.
+   * @returns {object}
+   */
+  addRdfDataToResource (cidmeResource:CidmeResource, rdfData:CidmeRdfDataResource):CidmeResource {
+    if (!cidmeResource ||
+            !rdfData ||
+            !this.validate(cidmeResource) ||
+            !this.validate(rdfData) ||
+            this.parseCidmeUri(rdfData['@id'])['resourceType'] !== 'RdfData'
+    ) {
+      throw new Error('ERROR:  One or more of the arguments are missing and/or invalid.')
+    }
+
+    if (!cidmeResource['cidme:data']) {
+      cidmeResource['cidme:data'] = []
+    }
+
+    cidmeResource['cidme:data'].push(rdfData)
+
+    // Validate the resource.
+    if (!this.validate(cidmeResource)) {
+      throw new Error('ERROR:  An error occured while validating the new resource.')
+    }
+
+    return cidmeResource
+  }
+
+
+  /**
+   * Adds a CIDME resource to another CIDME resource.  The resource is added to the appropriate place by specifying the parent ID to add to.  The type of resource to add is specified as well, indicating whether we're adding a MetaDataGroup, an EntityContext, or another type of resource.
+   * @param {string} parentId - The '@id' of the resource to add to.
+   * @param {object} cidmeResource - CIDME resource to add to.
+   * @param {object} resourceToAdd - The resource to add.
+   * @param {string} dataTypeToAdd - OPTIONAL - If resourceToAdd = 'DataGroup', this indicates what type of data group we're adding to.
    * @returns {object}
    */
   addResourceToParent (parentId:string, cidmeResource:CidmeResource, resourceToAdd:CidmeResource, dataTypeToAdd?:string):CidmeResource {
